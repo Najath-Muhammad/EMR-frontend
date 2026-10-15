@@ -7,6 +7,8 @@ interface WeeklyScheduleEditorProps {
   value: SaveScheduleInput;
   onChange: (updated: SaveScheduleInput) => void;
   disabled?: boolean;
+  selectedDayOfWeek?: number;
+  onSelectDayOfWeek?: (dayOfWeek: number) => void;
 }
 
 const DAYS_OF_WEEK: Array<{ dayOfWeek: number; dayName: DaySchedule['dayName']; shortLabel: string; label: string }> = [
@@ -23,8 +25,19 @@ export function WeeklyScheduleEditor({
   value,
   onChange,
   disabled = false,
+  selectedDayOfWeek: propSelectedDayOfWeek,
+  onSelectDayOfWeek,
 }: WeeklyScheduleEditorProps) {
-  const [selectedDayOfWeek, setSelectedDayOfWeek] = useState<number>(1); // Default Monday
+  const [internalDayOfWeek, setInternalDayOfWeek] = useState<number>(1); // Default Monday
+  const selectedDayOfWeek = propSelectedDayOfWeek ?? internalDayOfWeek;
+
+  const handleSelectDay = (day: number) => {
+    if (onSelectDayOfWeek) {
+      onSelectDayOfWeek(day);
+    } else {
+      setInternalDayOfWeek(day);
+    }
+  };
 
   const currentDayConfig = value.workingDays.find((d) => d.dayOfWeek === selectedDayOfWeek) ?? {
     dayOfWeek: selectedDayOfWeek,
@@ -207,7 +220,7 @@ export function WeeklyScheduleEditor({
               <button
                 key={d.dayOfWeek}
                 type="button"
-                onClick={() => setSelectedDayOfWeek(d.dayOfWeek)}
+                onClick={() => handleSelectDay(d.dayOfWeek)}
                 style={{
                   flex: 1,
                   minWidth: '58px',

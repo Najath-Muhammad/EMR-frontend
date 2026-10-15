@@ -78,6 +78,7 @@ export function SchedulesPage() {
   const [isDirty, setIsDirty] = useState<boolean>(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [activeDayOfWeek, setActiveDayOfWeek] = useState<number>(1); // Default Monday
 
   // Conflict modal state
   const [conflictModalOpen, setConflictModalOpen] = useState<boolean>(false);
@@ -411,6 +412,8 @@ export function SchedulesPage() {
               value={draftSchedule}
               onChange={handleScheduleChange}
               disabled={saveMutation.isPending}
+              selectedDayOfWeek={activeDayOfWeek}
+              onSelectDayOfWeek={setActiveDayOfWeek}
             />
           </div>
 
@@ -419,6 +422,7 @@ export function SchedulesPage() {
             <SlotPreviewGrid
               schedule={draftSchedule}
               doctorName={selectedDoctor?.name}
+              activeDayOfWeek={activeDayOfWeek}
             />
           </div>
         </div>

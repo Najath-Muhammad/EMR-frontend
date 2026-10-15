@@ -10,17 +10,40 @@ import { Button } from '../ui/Button';
 interface SlotPreviewGridProps {
   schedule: SaveScheduleInput;
   doctorName?: string;
+  activeDayOfWeek?: number; // 0 = Sun, 1 = Mon, ..., 6 = Sat
 }
 
-export function SlotPreviewGrid({ schedule, doctorName }: SlotPreviewGridProps) {
-  // Default to tomorrow to avoid past-time edge case when testing in the evening
+const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+function getNextDateForDayOfWeek(targetDayOfWeek: number): string {
+  const today = new Date();
+  const currentDay = today.getDay(); // 0 = Sun, 1 = Mon, ..., 6 = Sat
+  let daysUntil = (targetDayOfWeek - currentDay + 7) % 7;
+  // If target day is today, push to next week (+7 days) to ensure full working day without past-time cutoffs
+  if (daysUntil === 0) {
+    daysUntil = 7;
+  }
+  return format(addDays(today, daysUntil), 'yyyy-MM-dd');
+}
+
+export function SlotPreviewGrid({
+  schedule,
+  doctorName,
+  activeDayOfWeek = 1,
+}: SlotPreviewGridProps) {
+  // Sync preview date to the day of week currently selected in the schedule editor
   const [selectedDate, setSelectedDate] = useState<string>(() =>
-    format(addDays(new Date(), 1), 'yyyy-MM-dd'),
+    getNextDateForDayOfWeek(activeDayOfWeek),
   );
   const [summary, setSummary] = useState<DaySlotsSummary | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const previewMutation = usePreviewSlots();
+
+  // Whenever the active day tab in the editor changes (e.g. from Friday to Monday), update preview date to match
+  useEffect(() => {
+    setSelectedDate(getNextDateForDayOfWeek(activeDayOfWeek));
+  }, [activeDayOfWeek]);
 
   const handleFetchPreview = useCallback(
     (dateToUse = selectedDate) => {
@@ -53,12 +76,20 @@ export function SlotPreviewGrid({ schedule, doctorName }: SlotPreviewGridProps) 
   useEffect(() => {
     const timer = setTimeout(() => {
       handleFetchPreview(selectedDate);
-    }, 450);
+    }, 350);
 
     return () => clearTimeout(timer);
   }, [handleFetchPreview, selectedDate]);
 
-  const getSlotVariant = (slot: TimeSlot): { bg: string; border: string; text: string; badge: string; badgeVariant: 'success' | 'neutral' | 'danger' | 'warning' } => {
+  const getSlotVariant = (
+    slot: TimeSlot,
+  ): {
+    bg: string;
+    border: string;
+    text: string;
+    badge: string;
+    badgeVariant: 'success' | 'neutral' | 'danger' | 'warning';
+  } => {
     if (slot.isAvailable) {
       return {
         bg: '#ffffff',
@@ -95,6 +126,13 @@ export function SlotPreviewGrid({ schedule, doctorName }: SlotPreviewGridProps) 
     };
   };
 
+  const cleanDoctorName = doctorName
+    ? doctorName.trim().replace(/^(dr\.?\s*)+/i, 'Dr. ')
+    : '';
+
+  const activeDayName = DAY_NAMES[activeDayOfWeek] ?? 'Monday';
+  const isPreviewDayDifferent = summary && summary.dayOfWeek.toUpperCase() !== activeDayName.toUpperCase();
+
   return (
     <div
       style={{
@@ -124,7 +162,7 @@ export function SlotPreviewGrid({ schedule, doctorName }: SlotPreviewGridProps) 
             Live Slot Preview
           </h3>
           <span style={{ fontSize: '0.75rem', color: '#6c757d' }}>
-            {doctorName ? `Generated slots for Dr. ${doctorName}` : 'Dynamic slot engine verification'}
+            {cleanDoctorName ? `Generated slots for ${cleanDoctorName}` : 'Dynamic slot engine verification'}
           </span>
         </div>
 
@@ -158,6 +196,45 @@ export function SlotPreviewGrid({ schedule, doctorName }: SlotPreviewGridProps) 
           </Button>
         </div>
       </div>
+
+      {/* Helpful day sync notice if user picked a different day in the date picker */}
+      {isPreviewDayDifferent && (
+        <div
+          style={{
+            padding: '0.5rem 0.75rem',
+            background: '#eff6ff',
+            border: '1px solid #bfdbfe',
+            borderRadius: '6px',
+            fontSize: '0.8125rem',
+            color: '#1e40af',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '0.5rem',
+          }}
+        >
+          <span>
+            Previewing <strong>{summary.dayOfWeek}</strong> slots while editing <strong>{activeDayName}</strong>.
+          </span>
+          <button
+            type="button"
+            onClick={() => setSelectedDate(getNextDateForDayOfWeek(activeDayOfWeek))}
+            style={{
+              background: '#2563eb',
+              color: '#ffffff',
+              border: 'none',
+              borderRadius: '4px',
+              padding: '3px 8px',
+              cursor: 'pointer',
+              fontSize: '0.75rem',
+              fontWeight: 600,
+            }}
+          >
+            Switch Preview to {activeDayName}
+          </button>
+        </div>
+      )}
 
       {/* Summary KPI Bar */}
       {summary && (
