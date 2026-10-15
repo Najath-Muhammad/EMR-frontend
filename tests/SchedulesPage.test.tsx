@@ -177,12 +177,19 @@ describe('SchedulesPage', () => {
     });
   });
 
-  it('renders doctors dropdown and selects the first doctor by default', async () => {
+  it('shows no doctor selected initially, then renders doctor schedule details upon selection', async () => {
+    const user = userEvent.setup();
     renderComponent();
 
     await waitFor(() => {
       expect(screen.getByText(/Doctor Schedules & Dynamic Slot Engine/i)).toBeInTheDocument();
     });
+
+    // Check empty state prompt is displayed initially
+    expect(screen.getByText(/No Doctor Selected/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Please select a doctor from the physician list above to view, configure, and activate/i),
+    ).toBeInTheDocument();
 
     // Check doctor select dropdown contains doctors
     const select = screen.getByRole('combobox', { name: /select doctor/i });
@@ -190,12 +197,24 @@ describe('SchedulesPage', () => {
     expect(screen.getByText(/Dr\. Gregory House/i)).toBeInTheDocument();
     expect(screen.getByText(/Dr\. James Wilson/i)).toBeInTheDocument();
 
-    // Check schedule status badge
-    expect(screen.getByText('Schedule Configured')).toBeInTheDocument();
+    // Select doctor
+    await user.selectOptions(select, 'doc-1');
+
+    // Check schedule status badge and details now appear
+    expect(await screen.findByText('Schedule Configured')).toBeInTheDocument();
+    expect(screen.queryByText(/No Doctor Selected/i)).not.toBeInTheDocument();
   });
 
-  it('renders weekly schedule editor with working sessions and break periods', async () => {
+  it('renders weekly schedule editor with working sessions and break periods after doctor selection', async () => {
+    const user = userEvent.setup();
     renderComponent();
+
+    await waitFor(() => {
+      expect(screen.getByRole('combobox', { name: /select doctor/i })).toBeInTheDocument();
+    });
+
+    const select = screen.getByRole('combobox', { name: /select doctor/i });
+    await user.selectOptions(select, 'doc-1');
 
     await waitFor(() => {
       expect(screen.getByText(/Monday Schedule/i)).toBeInTheDocument();
@@ -212,8 +231,16 @@ describe('SchedulesPage', () => {
     expect(screen.getByDisplayValue('11:00')).toBeInTheDocument();
   });
 
-  it('renders live slot preview grid with slot chips and count summary', async () => {
+  it('renders live slot preview grid with slot chips and count summary after doctor selection', async () => {
+    const user = userEvent.setup();
     renderComponent();
+
+    await waitFor(() => {
+      expect(screen.getByRole('combobox', { name: /select doctor/i })).toBeInTheDocument();
+    });
+
+    const select = screen.getByRole('combobox', { name: /select doctor/i });
+    await user.selectOptions(select, 'doc-1');
 
     await waitFor(() => {
       expect(screen.getByText(/Live Slot Preview/i)).toBeInTheDocument();
@@ -239,6 +266,10 @@ describe('SchedulesPage', () => {
     });
 
     renderComponent();
+
+    // Select doctor
+    const select = await screen.findByRole('combobox', { name: /select doctor/i });
+    await user.selectOptions(select, 'doc-1');
 
     // Wait for doctor schedule to finish loading
     const durationSelect = await screen.findByLabelText(/Appointment Slot Duration/i);
@@ -287,6 +318,10 @@ describe('SchedulesPage', () => {
     });
 
     renderComponent();
+
+    // Select doctor
+    const select = await screen.findByRole('combobox', { name: /select doctor/i });
+    await user.selectOptions(select, 'doc-1');
 
     // Wait for doctor schedule to finish loading
     await screen.findByDisplayValue('Morning Clinic');

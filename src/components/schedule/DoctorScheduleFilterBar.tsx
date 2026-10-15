@@ -120,7 +120,7 @@ export function DoctorScheduleFilterBar({
   const hasFiltersActive = Boolean(departmentFilter || searchQuery || statusFilter !== 'ALL' || sortBy !== 'name-asc');
 
   const handleRequestDoctorChange = (newDoctorId: string) => {
-    if (!newDoctorId || newDoctorId === selectedDoctorId) return;
+    if (newDoctorId === selectedDoctorId) return;
 
     if (isDirty) {
       setPendingDoctorId(newDoctorId);
@@ -131,7 +131,7 @@ export function DoctorScheduleFilterBar({
   };
 
   const handleConfirmSwitch = () => {
-    if (pendingDoctorId) {
+    if (pendingDoctorId !== null) {
       onSelectDoctor(pendingDoctorId);
     }
     setShowDirtyModal(false);
@@ -151,7 +151,11 @@ export function DoctorScheduleFilterBar({
   };
 
   const handleStepNext = () => {
-    if (currentIndex >= 0 && currentIndex < filteredAndSortedDoctors.length - 1) {
+    if (currentIndex < 0) {
+      if (filteredAndSortedDoctors.length > 0 && filteredAndSortedDoctors[0]) {
+        handleRequestDoctorChange(filteredAndSortedDoctors[0].id);
+      }
+    } else if (currentIndex < filteredAndSortedDoctors.length - 1) {
       const nextDoc = filteredAndSortedDoctors[currentIndex + 1];
       if (nextDoc) handleRequestDoctorChange(nextDoc.id);
     }
@@ -417,17 +421,20 @@ export function DoctorScheduleFilterBar({
                 -- No doctors matching current filters --
               </option>
             ) : (
-              filteredAndSortedDoctors.map((doc) => (
-                <option key={doc.id} value={doc.id}>
-                  Dr. {doc.name} {doc.department ? `(${doc.department.name})` : ''} -{' '}
-                  {doc.specialization || 'General Practice'}{' '}
-                  {doc.hasSchedule
-                    ? doc.isScheduleActive
-                      ? '• Active'
-                      : '○ Inactive'
-                    : '⚠ No Schedule'}
-                </option>
-              ))
+              <>
+                <option value="">-- Select a Doctor to Manage Schedule --</option>
+                {filteredAndSortedDoctors.map((doc) => (
+                  <option key={doc.id} value={doc.id}>
+                    Dr. {doc.name} {doc.department ? `(${doc.department.name})` : ''} -{' '}
+                    {doc.specialization || 'General Practice'}{' '}
+                    {doc.hasSchedule
+                      ? doc.isScheduleActive
+                        ? '• Active'
+                        : '○ Inactive'
+                      : '⚠ No Schedule'}
+                  </option>
+                ))}
+              </>
             )}
           </select>
 
@@ -437,7 +444,7 @@ export function DoctorScheduleFilterBar({
             variant="secondary"
             size="sm"
             onClick={handleStepNext}
-            disabled={currentIndex < 0 || currentIndex >= filteredAndSortedDoctors.length - 1}
+            disabled={filteredAndSortedDoctors.length === 0 || (currentIndex >= 0 && currentIndex >= filteredAndSortedDoctors.length - 1)}
             title="Next doctor in list"
             aria-label="Next Doctor"
           >
