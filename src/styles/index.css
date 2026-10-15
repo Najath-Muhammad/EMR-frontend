@@ -1,0 +1,61 @@
+/* EMR Design System --- Global Tokens & Reset */
+:root {
+  --color-bg-primary:     #ffffff;
+  --color-bg-secondary:   #f8f9fa;
+  --color-bg-muted:       #f1f3f5;
+  --color-text-primary:   #0a0a0a;
+  --color-text-secondary: #6c757d;
+  --color-text-muted:     #adb5bd;
+  --color-border:         #dee2e6;
+  --color-accent:         #0a0a0a;
+  --color-accent-hover:   #1c1c1e;
+  --color-danger:         #dc3545;
+  --color-success:        #198754;
+  --color-warning:        #ffc107;
+  --color-info:           #0dcaf0;
+
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: inherit;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #0a0a0a;
+  outline-offset: 2px;
+}
