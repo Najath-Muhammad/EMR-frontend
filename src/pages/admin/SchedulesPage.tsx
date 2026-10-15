@@ -96,7 +96,7 @@ export function SchedulesPage() {
     return [];
   }, [doctorsData]);
 
-  const effectiveDoctorId = selectedDoctorId || (doctorsList[0]?.id ?? '');
+  const effectiveDoctorId = selectedDoctorId;
 
   const selectedDoctor = useMemo(
     () => doctorsList.find((d) => d.id === effectiveDoctorId),
@@ -114,6 +114,11 @@ export function SchedulesPage() {
 
   // Load existing schedule or set default template
   useEffect(() => {
+    if (!effectiveDoctorId) {
+      setDraftSchedule(DEFAULT_SCHEDULE_INPUT);
+      setIsDirty(false);
+      return;
+    }
     if (scheduleData?.data) {
       setDraftSchedule({
         slotDuration: scheduleData.data.slotDuration ?? 15,
@@ -232,40 +237,42 @@ export function SchedulesPage() {
           </p>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={() => {
-              if (scheduleData?.data) {
-                setDraftSchedule({
-                  slotDuration: scheduleData.data.slotDuration ?? 15,
-                  isActive: scheduleData.data.isActive ?? true,
-                  workingDays: scheduleData.data.workingDays ?? DEFAULT_WORKING_DAYS,
-                });
-                setIsDirty(false);
-              } else {
-                setDraftSchedule(DEFAULT_SCHEDULE_INPUT);
-                setIsDirty(false);
-              }
-              setSuccessMessage(null);
-              setErrorMessage(null);
-            }}
-            disabled={!isDirty || saveMutation.isPending}
-          >
-            Reset
-          </Button>
+        {selectedDoctor && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => {
+                if (scheduleData?.data) {
+                  setDraftSchedule({
+                    slotDuration: scheduleData.data.slotDuration ?? 15,
+                    isActive: scheduleData.data.isActive ?? true,
+                    workingDays: scheduleData.data.workingDays ?? DEFAULT_WORKING_DAYS,
+                  });
+                  setIsDirty(false);
+                } else {
+                  setDraftSchedule(DEFAULT_SCHEDULE_INPUT);
+                  setIsDirty(false);
+                }
+                setSuccessMessage(null);
+                setErrorMessage(null);
+              }}
+              disabled={!isDirty || saveMutation.isPending}
+            >
+              Reset
+            </Button>
 
-          <Button
-            type="button"
-            variant="primary"
-            onClick={() => handleSave(false)}
-            isLoading={saveMutation.isPending}
-            disabled={!effectiveDoctorId}
-          >
-            {isDirty ? '● Save Changes' : 'Save Schedule'}
-          </Button>
-        </div>
+            <Button
+              type="button"
+              variant="primary"
+              onClick={() => handleSave(false)}
+              isLoading={saveMutation.isPending}
+              disabled={!effectiveDoctorId}
+            >
+              {isDirty ? '● Save Changes' : 'Save Schedule'}
+            </Button>
+          </div>
+        )}
       </div>
 
       {/* Notifications */}
@@ -374,8 +381,18 @@ export function SchedulesPage() {
         </div>
       </Card>
 
-      {/* Main Two-Column Work Area */}
-      {isLoadingSchedule ? (
+      {/* Main Two-Column Work Area or Empty Prompt */}
+      {!selectedDoctor ? (
+        <Card style={{ padding: '3.5rem 2rem', textAlign: 'center', background: '#ffffff' }}>
+          <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>👨‍⚕️</div>
+          <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#0a0a0a', marginBottom: '0.5rem' }}>
+            No Doctor Selected
+          </h2>
+          <p style={{ fontSize: '0.875rem', color: '#6c757d', maxWidth: '480px', margin: '0 auto', lineHeight: 1.6 }}>
+            Please select a doctor from the physician list above to view, configure, and activate their weekly clinical schedule and preview generated appointment slots.
+          </p>
+        </Card>
+      ) : isLoadingSchedule ? (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '4rem 1rem', gap: '0.75rem' }}>
           <Spinner size="sm" />
           <span style={{ color: '#6c757d', fontSize: '0.875rem' }}>Fetching doctor schedule…</span>
@@ -404,7 +421,7 @@ export function SchedulesPage() {
           <div style={{ position: 'sticky', top: '1rem' }}>
             <SlotPreviewGrid
               schedule={draftSchedule}
-              doctorName={selectedDoctor?.name}
+              doctorName={selectedDoctor.name}
               activeDayOfWeek={activeDayOfWeek}
             />
           </div>

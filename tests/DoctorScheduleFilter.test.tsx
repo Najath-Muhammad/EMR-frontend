@@ -127,11 +127,11 @@ describe('DoctorScheduleFilterBar', () => {
     await user.selectOptions(deptFilter, 'dept-2'); // Neurology
 
     const docSelect = screen.getByRole('combobox', { name: /select doctor/i });
-    const options = Array.from(docSelect.querySelectorAll('option'));
+    const doctorOptions = Array.from(docSelect.querySelectorAll('option')).filter((o) => o.value !== '');
 
-    expect(options).toHaveLength(1);
-    expect(options[0]?.textContent).toContain('Dr. Bob Jones');
-    expect(options[0]?.textContent).toContain('Neurology');
+    expect(doctorOptions).toHaveLength(1);
+    expect(doctorOptions[0]?.textContent).toContain('Dr. Bob Jones');
+    expect(doctorOptions[0]?.textContent).toContain('Neurology');
     expect(screen.getByText(/showing/i).textContent).toContain('Showing 1 of 4 doctors');
   });
 
@@ -144,18 +144,18 @@ describe('DoctorScheduleFilterBar', () => {
     // Search by specialization
     await user.type(searchInput, 'Pediatrics');
     let docSelect = screen.getByRole('combobox', { name: /select doctor/i });
-    let options = Array.from(docSelect.querySelectorAll('option'));
+    let doctorOptions = Array.from(docSelect.querySelectorAll('option')).filter((o) => o.value !== '');
 
-    expect(options).toHaveLength(1);
-    expect(options[0]?.textContent).toContain('Dr. Diana Prince');
+    expect(doctorOptions).toHaveLength(1);
+    expect(doctorOptions[0]?.textContent).toContain('Dr. Diana Prince');
 
     // Clear search using clear button (✕)
     const clearBtn = screen.getByRole('button', { name: /clear search/i });
     await user.click(clearBtn);
 
     docSelect = screen.getByRole('combobox', { name: /select doctor/i });
-    options = Array.from(docSelect.querySelectorAll('option'));
-    expect(options).toHaveLength(4);
+    doctorOptions = Array.from(docSelect.querySelectorAll('option')).filter((o) => o.value !== '');
+    expect(doctorOptions).toHaveLength(4);
   });
 
   it('filters doctors by status buttons (Needs Setup vs Configured)', async () => {
@@ -167,9 +167,9 @@ describe('DoctorScheduleFilterBar', () => {
     await user.click(needsSetupBtn);
 
     let docSelect = screen.getByRole('combobox', { name: /select doctor/i });
-    let options = Array.from(docSelect.querySelectorAll('option'));
-    expect(options).toHaveLength(2);
-    expect(options.map((o) => o.textContent)).toEqual(
+    let doctorOptions = Array.from(docSelect.querySelectorAll('option')).filter((o) => o.value !== '');
+    expect(doctorOptions).toHaveLength(2);
+    expect(doctorOptions.map((o) => o.textContent)).toEqual(
       expect.arrayContaining([
         expect.stringContaining('Dr. Bob Jones'),
         expect.stringContaining('Dr. Diana Prince'),
@@ -181,9 +181,9 @@ describe('DoctorScheduleFilterBar', () => {
     await user.click(configuredBtn);
 
     docSelect = screen.getByRole('combobox', { name: /select doctor/i });
-    options = Array.from(docSelect.querySelectorAll('option'));
-    expect(options).toHaveLength(2);
-    expect(options.map((o) => o.textContent)).toEqual(
+    doctorOptions = Array.from(docSelect.querySelectorAll('option')).filter((o) => o.value !== '');
+    expect(doctorOptions).toHaveLength(2);
+    expect(doctorOptions.map((o) => o.textContent)).toEqual(
       expect.arrayContaining([
         expect.stringContaining('Dr. Alice Smith'),
         expect.stringContaining('Dr. Charlie Brown'),
@@ -194,8 +194,8 @@ describe('DoctorScheduleFilterBar', () => {
     const clearFiltersBtn = screen.getByRole('button', { name: /clear filters/i });
     await user.click(clearFiltersBtn);
 
-    options = Array.from(docSelect.querySelectorAll('option'));
-    expect(options).toHaveLength(4);
+    doctorOptions = Array.from(docSelect.querySelectorAll('option')).filter((o) => o.value !== '');
+    expect(doctorOptions).toHaveLength(4);
   });
 
   it('sorts doctors by various criteria (Name Z-A, Department, Needs Schedule first)', async () => {
@@ -207,17 +207,17 @@ describe('DoctorScheduleFilterBar', () => {
     // Sort by Name (Z → A)
     await user.selectOptions(sortSelect, 'name-desc');
     let docSelect = screen.getByRole('combobox', { name: /select doctor/i });
-    let options = Array.from(docSelect.querySelectorAll('option'));
-    expect(options[0]?.textContent).toContain('Diana Prince');
-    expect(options[3]?.textContent).toContain('Alice Smith');
+    let doctorOptions = Array.from(docSelect.querySelectorAll('option')).filter((o) => o.value !== '');
+    expect(doctorOptions[0]?.textContent).toContain('Diana Prince');
+    expect(doctorOptions[3]?.textContent).toContain('Alice Smith');
 
     // Sort by Needs Schedule First
     await user.selectOptions(sortSelect, 'needs-schedule');
-    options = Array.from(docSelect.querySelectorAll('option'));
+    doctorOptions = Array.from(docSelect.querySelectorAll('option')).filter((o) => o.value !== '');
     // Unscheduled (Bob, Diana) should come before scheduled (Alice, Charlie)
-    expect(options[0]?.textContent).toMatch(/Bob Jones|Diana Prince/);
-    expect(options[1]?.textContent).toMatch(/Bob Jones|Diana Prince/);
-    expect(options[2]?.textContent).toMatch(/Alice Smith|Charlie Brown/);
+    expect(doctorOptions[0]?.textContent).toMatch(/Bob Jones|Diana Prince/);
+    expect(doctorOptions[1]?.textContent).toMatch(/Bob Jones|Diana Prince/);
+    expect(doctorOptions[2]?.textContent).toMatch(/Alice Smith|Charlie Brown/);
   });
 
   it('navigates through doctors using Next (▶) and Prev (◀) stepper buttons', async () => {
