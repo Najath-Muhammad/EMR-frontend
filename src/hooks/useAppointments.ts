@@ -4,10 +4,19 @@ import {
   fetchAppointmentById,
   createAppointment,
   cancelAppointment,
+  markAppointmentArrived,
+  completeAppointment,
+  updateAppointment,
+  updateConsultationNotes,
+  rescheduleAppointment,
 } from '../api/appointment.api';
 import type {
   CreateAppointmentInput,
   CancelAppointmentInput,
+  UpdateAppointmentInput,
+  CompleteAppointmentInput,
+  UpdateConsultationNotesInput,
+  RescheduleAppointmentInput,
   AppointmentQueryParams,
 } from '../types/appointment.types';
 
@@ -37,6 +46,68 @@ export function useCreateAppointment() {
 
   return useMutation({
     mutationFn: (payload: CreateAppointmentInput) => createAppointment(payload),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: APPOINTMENT_QUERY_KEYS.all });
+      void queryClient.invalidateQueries({ queryKey: ['slots'] });
+    },
+  });
+}
+
+export function useMarkAppointmentArrived() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string) => markAppointmentArrived(id),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: APPOINTMENT_QUERY_KEYS.all });
+      void queryClient.invalidateQueries({ queryKey: ['slots'] });
+    },
+  });
+}
+
+export function useCompleteAppointment() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload?: CompleteAppointmentInput }) =>
+      completeAppointment(id, payload),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: APPOINTMENT_QUERY_KEYS.all });
+      void queryClient.invalidateQueries({ queryKey: ['slots'] });
+    },
+  });
+}
+
+export function useUpdateAppointment() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload: UpdateAppointmentInput }) =>
+      updateAppointment(id, payload),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: APPOINTMENT_QUERY_KEYS.all });
+    },
+  });
+}
+
+export function useUpdateConsultationNotes() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload: UpdateConsultationNotesInput }) =>
+      updateConsultationNotes(id, payload),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: APPOINTMENT_QUERY_KEYS.all });
+    },
+  });
+}
+
+export function useRescheduleAppointment() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload: RescheduleAppointmentInput }) =>
+      rescheduleAppointment(id, payload),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: APPOINTMENT_QUERY_KEYS.all });
       void queryClient.invalidateQueries({ queryKey: ['slots'] });
