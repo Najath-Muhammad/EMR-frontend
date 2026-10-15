@@ -1,5 +1,7 @@
 import { NavLink } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';
 import { APP_ROUTES } from '../../constants/routes';
+import { Role, ROLES } from '../../types/auth.types';
 
 interface NavItem {
   label: string;
@@ -7,15 +9,26 @@ interface NavItem {
   icon: string;
 }
 
-const navItems: NavItem[] = [
-  { label: 'Dashboard',    path: APP_ROUTES.DASHBOARD,    icon: '⊡' },
-  { label: 'Departments',  path: APP_ROUTES.DEPARTMENTS,  icon: '⊞' },
-  { label: 'Doctors',      path: APP_ROUTES.DOCTORS,      icon: '✚' },
-  { label: 'Receptionists',path: APP_ROUTES.RECEPTIONISTS,icon: '⊟' },
-  { label: 'Patients',     path: APP_ROUTES.PATIENTS,     icon: '□' },
-  { label: 'Appointments', path: APP_ROUTES.APPOINTMENTS, icon: '▦' },
-  { label: 'Schedules',    path: APP_ROUTES.SCHEDULES,    icon: '▣' },
-];
+const roleNavMap: Record<Role, NavItem[]> = {
+  [ROLES.SUPER_ADMIN]: [
+    { label: 'Admin Dashboard', path: APP_ROUTES.ADMIN_DASHBOARD, icon: '⊡' },
+    { label: 'Departments',     path: APP_ROUTES.DEPARTMENTS,     icon: '⊞' },
+    { label: 'Doctors',         path: APP_ROUTES.DOCTORS,         icon: '✚' },
+    { label: 'Receptionists',   path: APP_ROUTES.RECEPTIONISTS,   icon: '⊟' },
+    { label: 'Schedules',       path: APP_ROUTES.SCHEDULES,       icon: '▣' },
+    { label: 'All Appointments',path: APP_ROUTES.ALL_APPOINTMENTS,icon: '▦' },
+  ],
+  [ROLES.RECEPTIONIST]: [
+    { label: 'Reception Desk',  path: APP_ROUTES.RECEPTIONIST_DASHBOARD, icon: '⊡' },
+    { label: 'Patient Records', path: APP_ROUTES.PATIENTS,              icon: '□' },
+    { label: 'Book Appointment',path: APP_ROUTES.APPOINTMENTS_BOOKING,  icon: '▦' },
+  ],
+  [ROLES.DOCTOR]: [
+    { label: 'Doctor Dashboard',path: APP_ROUTES.DOCTOR_DASHBOARD,    icon: '⊡' },
+    { label: 'My Appointments', path: APP_ROUTES.DOCTOR_APPOINTMENTS, icon: '▦' },
+    { label: 'My Patients',     path: APP_ROUTES.DOCTOR_PATIENTS,     icon: '□' },
+  ],
+};
 
 const sidebarStyle: React.CSSProperties = {
   width: '240px',
@@ -57,8 +70,11 @@ const linkBase: React.CSSProperties = {
 };
 
 export function Sidebar() {
+  const { user } = useAuth();
+  const navItems = user?.role ? roleNavMap[user.role] ?? [] : [];
+
   return (
-    <aside style={sidebarStyle} aria-label="Main navigation">
+    <aside style={sidebarStyle}>
       <div style={brandStyle}>
         <span style={{ fontWeight: 700, fontSize: '1rem', color: '#0a0a0a', letterSpacing: '-0.02em' }}>
           EMR System
@@ -68,7 +84,7 @@ export function Sidebar() {
         </span>
       </div>
 
-      <nav style={navStyle}>
+      <nav style={navStyle} aria-label="Main navigation">
         {navItems.map((item) => (
           <NavLink
             key={item.path}
@@ -88,7 +104,9 @@ export function Sidebar() {
       </nav>
 
       <div style={{ padding: '1rem 1.5rem', borderTop: '1px solid #dee2e6' }}>
-        <span style={{ fontSize: '0.75rem', color: '#adb5bd' }}>v0.1.0 · Phase 0</span>
+        <span style={{ fontSize: '0.75rem', color: '#adb5bd' }}>
+          {user ? `Role: ${user.role}` : 'Phase 1 · Auth & RBAC'}
+        </span>
       </div>
     </aside>
   );
