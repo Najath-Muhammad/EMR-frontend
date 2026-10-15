@@ -7,6 +7,7 @@ import {
 } from '../../hooks/useDoctorSchedule';
 import { WeeklyScheduleEditor } from '../../components/schedule/WeeklyScheduleEditor';
 import { SlotPreviewGrid } from '../../components/schedule/SlotPreviewGrid';
+import { DoctorScheduleFilterBar } from '../../components/schedule/DoctorScheduleFilterBar';
 import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/Badge';
 import { Card } from '../../components/ui/Card';
@@ -318,63 +319,45 @@ export function SchedulesPage() {
         </div>
       )}
 
-      {/* Doctor Selector Header Card */}
+      {/* Doctor Selector Header Card with Precision Filter Bar */}
       <Card>
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            flexWrap: 'wrap',
-            gap: '1.25rem',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: 1, minWidth: '280px' }}>
-            <label
-              htmlFor="doctorSelector"
-              style={{ fontSize: '0.875rem', fontWeight: 700, color: '#212529', whiteSpace: 'nowrap' }}
-            >
-              Select Doctor:
-            </label>
-            <select
-              id="doctorSelector"
-              aria-label="Select Doctor"
-              value={effectiveDoctorId}
-              onChange={(e) => {
-                setSelectedDoctorId(e.target.value);
-                setSuccessMessage(null);
-                setErrorMessage(null);
-              }}
-              style={{
-                flex: 1,
-                maxWidth: '420px',
-                padding: '8px 12px',
-                borderRadius: '6px',
-                border: '1px solid #ced4da',
-                fontSize: '0.875rem',
-                fontWeight: 600,
-                background: '#ffffff',
-                outline: 'none',
-              }}
-            >
-              {doctorsList.map((doc) => (
-                <option key={doc.id} value={doc.id}>
-                  Dr. {doc.name} {doc.department ? `(${doc.department.name})` : ''} -{' '}
-                  {doc.specialization || 'General Practice'}
-                </option>
-              ))}
-            </select>
-          </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <DoctorScheduleFilterBar
+            doctors={doctorsList}
+            selectedDoctorId={effectiveDoctorId}
+            onSelectDoctor={(newDoctorId) => {
+              setSelectedDoctorId(newDoctorId);
+              setIsDirty(false);
+              setSuccessMessage(null);
+              setErrorMessage(null);
+            }}
+            isDirty={isDirty}
+          />
 
           {selectedDoctor && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
-              <Badge variant={selectedDoctor.hasSchedule ? 'success' : 'warning'}>
-                {selectedDoctor.hasSchedule ? 'Schedule Configured' : 'New / Unconfigured'}
-              </Badge>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                flexWrap: 'wrap',
+                gap: '0.75rem',
+                paddingTop: '0.75rem',
+                borderTop: '1px solid #f1f3f5',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+                <span style={{ fontSize: '0.8125rem', fontWeight: 600, color: '#495057' }}>
+                  Current Doctor Status:
+                </span>
+                <Badge variant={selectedDoctor.hasSchedule ? 'success' : 'warning'}>
+                  {selectedDoctor.hasSchedule ? 'Schedule Configured' : 'New / Unconfigured'}
+                </Badge>
 
-              <Badge variant={draftSchedule.isActive ? 'success' : 'neutral'}>
-                {draftSchedule.isActive ? 'Schedule Active' : 'Schedule Inactive'}
-              </Badge>
+                <Badge variant={draftSchedule.isActive ? 'success' : 'neutral'}>
+                  {draftSchedule.isActive ? 'Schedule Active' : 'Schedule Inactive'}
+                </Badge>
+              </div>
 
               <Button
                 type="button"
