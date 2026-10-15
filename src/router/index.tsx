@@ -14,6 +14,8 @@ import { DoctorsPage } from '../pages/admin/DoctorsPage';
 import { ReceptionistsPage } from '../pages/admin/ReceptionistsPage';
 import { SchedulesPage } from '../pages/admin/SchedulesPage';
 import { PatientsPage } from '../pages/receptionist/PatientsPage';
+import { BookAppointmentPage } from '../pages/receptionist/BookAppointmentPage';
+import { AppointmentsListPage } from '../pages/appointments/AppointmentsListPage';
 import { ActivateAccountPage } from '../pages/auth/ActivateAccountPage';
 import { APP_ROUTES } from '../constants/routes';
 import { ROLES } from '../types/auth.types';
@@ -53,7 +55,7 @@ export const router = createBrowserRouter([
               { path: 'admin/receptionists', element: <ReceptionistsPage /> },
               { path: 'admin/schedules', element: <SchedulesPage /> },
               { path: 'admin/patients', element: <PatientsPage /> },
-              { path: 'admin/appointments', element: <SuperAdminDashboard /> },
+              { path: 'admin/appointments', element: <AppointmentsListPage /> },
             ],
           },
 
@@ -63,7 +65,8 @@ export const router = createBrowserRouter([
             children: [
               { path: 'receptionist/dashboard', element: <ReceptionistDashboard /> },
               { path: 'receptionist/patients', element: <PatientsPage /> },
-              { path: 'receptionist/appointments', element: <ReceptionistDashboard /> },
+              { path: 'receptionist/appointments', element: <BookAppointmentPage /> },
+              { path: 'receptionist/appointments-list', element: <AppointmentsListPage /> },
             ],
           },
 
@@ -72,7 +75,7 @@ export const router = createBrowserRouter([
             element: <ProtectedRoute allowedRoles={[ROLES.DOCTOR]} />,
             children: [
               { path: 'doctor/dashboard', element: <DoctorDashboard /> },
-              { path: 'doctor/appointments', element: <DoctorDashboard /> },
+              { path: 'doctor/appointments', element: <AppointmentsListPage /> },
               { path: 'doctor/patients', element: <PatientsPage /> },
               { path: 'doctor/schedule', element: <DoctorDashboard /> },
             ],
