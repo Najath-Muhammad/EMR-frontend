@@ -13,7 +13,7 @@ import { AxiosError, AxiosResponse } from 'axios';
 
 vi.mock('../src/hooks/useAuth', () => ({
   useAuth: vi.fn(() => ({
-    user: { id: 'u-1', email: 'receptionist@hospital.com', name: 'Desk Staff', role: 'RECEPTIONIST' },
+    user: { id: 'u-1', email: 'admin@hospital.com', name: 'Super Admin', role: 'SUPER_ADMIN' },
     isAuthenticated: true,
   })),
 }));

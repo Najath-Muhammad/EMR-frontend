@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
@@ -12,6 +12,8 @@ import { useActiveDepartments } from '../../hooks/useDepartments';
 import { useDoctors, useDoctorSlots } from '../../hooks/useDoctorSchedule';
 import { usePatients } from '../../hooks/usePatients';
 import { useCreateAppointment } from '../../hooks/useAppointments';
+import { useAuth } from '../../hooks/useAuth';
+import { ROLES } from '../../types/auth.types';
 import { Patient } from '../../types/patient.types';
 import { TimeSlot } from '../../types/slot.types';
 import { APP_ROUTES } from '../../constants/routes';
@@ -19,6 +21,21 @@ import { AxiosError } from 'axios';
 
 export function BookAppointmentPage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const isReceptionist = user?.role === ROLES.RECEPTIONIST;
+
+  const receptionistDeptId = useMemo(() => {
+    if (!user || user.role !== ROLES.RECEPTIONIST) return null;
+    if (typeof user.department === 'string') return user.department;
+    if (user.department && typeof user.department === 'object') {
+      return (
+        (user.department as { id?: string; _id?: string }).id ||
+        (user.department as { id?: string; _id?: string })._id ||
+        null
+      );
+    }
+    return null;
+  }, [user]);
 
   // Step 1: Patient Selection State
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
@@ -26,8 +43,15 @@ export function BookAppointmentPage() {
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
 
   // Step 2: Department & Doctor State
-  const [departmentId, setDepartmentId] = useState('');
+  const [departmentId, setDepartmentId] = useState(receptionistDeptId || '');
   const [doctorId, setDoctorId] = useState('');
+
+  // Lock department for receptionist
+  useEffect(() => {
+    if (isReceptionist && receptionistDeptId && departmentId !== receptionistDeptId) {
+      setDepartmentId(receptionistDeptId);
+    }
+  }, [isReceptionist, receptionistDeptId, departmentId]);
 
   // Step 3: Date & Time Slot State
   const todayStr = useMemo(() => new Date().toISOString().split('T')[0] as string, []);
@@ -436,28 +460,51 @@ export function BookAppointmentPage() {
             >
               Department *
             </label>
-            <select
-              id="deptSelect"
-              value={departmentId}
-              onChange={(e) => handleDepartmentChange(e.target.value)}
-              disabled={isLoadingDepts}
-              style={{
-                width: '100%',
-                padding: '8px 12px',
-                borderRadius: '6px',
-                border: '1px solid #ced4da',
-                fontSize: '0.875rem',
-                outline: 'none',
-                background: '#ffffff',
-              }}
-            >
-              <option value="">-- Choose a Department --</option>
-              {departments.map((dept) => (
-                <option key={dept.id} value={dept.id}>
-                  {dept.name} ({dept.code})
-                </option>
-              ))}
-            </select>
+            {isReceptionist ? (
+              <div
+                style={{
+                  width: '100%',
+                  padding: '8px 12px',
+                  borderRadius: '6px',
+                  border: '1px solid #dee2e6',
+                  background: '#f8f9fa',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}
+              >
+                <span style={{ fontSize: '0.875rem', fontWeight: 600, color: '#0a0a0a' }}>
+                  {departments.find((d) => d.id === (receptionistDeptId || departmentId))?.name || 'Assigned Department'}
+                  {departments.find((d) => d.id === (receptionistDeptId || departmentId))?.code
+                    ? ` (${departments.find((d) => d.id === (receptionistDeptId || departmentId))?.code})`
+                    : ''}
+                </span>
+                <Badge variant="info">Your Department</Badge>
+              </div>
+            ) : (
+              <select
+                id="deptSelect"
+                value={departmentId}
+                onChange={(e) => handleDepartmentChange(e.target.value)}
+                disabled={isLoadingDepts}
+                style={{
+                  width: '100%',
+                  padding: '8px 12px',
+                  borderRadius: '6px',
+                  border: '1px solid #ced4da',
+                  fontSize: '0.875rem',
+                  outline: 'none',
+                  background: '#ffffff',
+                }}
+              >
+                <option value="">-- Choose a Department --</option>
+                {departments.map((dept) => (
+                  <option key={dept.id} value={dept.id}>
+                    {dept.name} ({dept.code})
+                  </option>
+                ))}
+              </select>
+            )}
             {validationErrors['department'] && (
               <span style={{ fontSize: '0.75rem', color: '#dc3545', marginTop: '2px', display: 'block' }}>
                 {validationErrors['department']}

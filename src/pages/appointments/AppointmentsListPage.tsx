@@ -5,7 +5,15 @@ import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/Badge';
 import { Spinner } from '../../components/ui/Spinner';
 import { CancelAppointmentModal } from '../../components/appointments/CancelAppointmentModal';
-import { useAppointments, useCancelAppointment } from '../../hooks/useAppointments';
+import { AppointmentDetailModal } from '../../components/appointments/AppointmentDetailModal';
+import { RescheduleModal } from '../../components/appointments/RescheduleModal';
+import { EditAppointmentModal } from '../../components/appointments/EditAppointmentModal';
+import { ConsultationNotesModal } from '../../components/appointments/ConsultationNotesModal';
+import {
+  useAppointments,
+  useCancelAppointment,
+  useMarkAppointmentArrived,
+} from '../../hooks/useAppointments';
 import { useActiveDepartments } from '../../hooks/useDepartments';
 import { useDoctors } from '../../hooks/useDoctorSchedule';
 import { useAuth } from '../../hooks/useAuth';
@@ -17,7 +25,9 @@ export function AppointmentsListPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const isDoctor = user?.role === ROLES.DOCTOR;
-  const canBook = user?.role === ROLES.SUPER_ADMIN || user?.role === ROLES.RECEPTIONIST;
+  const isReceptionist = user?.role === ROLES.RECEPTIONIST;
+  const isSuperAdmin = user?.role === ROLES.SUPER_ADMIN;
+  const canBook = isSuperAdmin || isReceptionist;
 
   // Filter States
   const [departmentId, setDepartmentId] = useState('');
@@ -27,8 +37,13 @@ export function AppointmentsListPage() {
   const [page, setPage] = useState(1);
   const limit = 15;
 
-  // Modals & Notices
+  // Modals
   const [appointmentToCancel, setAppointmentToCancel] = useState<Appointment | null>(null);
+  const [selectedDetailAppt, setSelectedDetailAppt] = useState<Appointment | null>(null);
+  const [apptToReschedule, setApptToReschedule] = useState<Appointment | null>(null);
+  const [apptToEdit, setApptToEdit] = useState<Appointment | null>(null);
+  const [apptForConsultation, setApptForConsultation] = useState<Appointment | null>(null);
+
   const [notification, setNotification] = useState<string | null>(null);
 
   // Queries
@@ -76,8 +91,9 @@ export function AppointmentsListPage() {
   const total = appointmentData?.meta?.total ?? appointmentsList.length;
   const totalPages = appointmentData?.meta?.totalPages ?? (Math.ceil(total / limit) || 1);
 
-  // Cancellation mutation
+  // Mutations
   const cancelMutation = useCancelAppointment();
+  const markArrivedMutation = useMarkAppointmentArrived();
 
   const handleConfirmCancel = async (reason: string) => {
     if (!appointmentToCancel) return;
@@ -95,17 +111,32 @@ export function AppointmentsListPage() {
     }
   };
 
+  const handleMarkArrived = async (appt: Appointment) => {
+    try {
+      await markArrivedMutation.mutateAsync(appt.id);
+      setNotification(`Patient ${appt.patient.fullName} marked as arrived.`);
+      if (selectedDetailAppt?.id === appt.id) {
+        setSelectedDetailAppt(null);
+      }
+      void refetch();
+    } catch {
+      setNotification('Failed to mark patient as arrived. Please try again.');
+    }
+  };
+
   const getStatusBadgeVariant = (st: AppointmentStatus) => {
     switch (st) {
       case 'CONFIRMED':
       case 'SCHEDULED':
-        return 'success';
+        return 'info';
+      case 'ARRIVED':
+        return 'warning';
       case 'COMPLETED':
-        return 'neutral';
+        return 'success';
       case 'CANCELLED':
         return 'danger';
       case 'NO_SHOW':
-        return 'warning';
+        return 'neutral';
       default:
         return 'neutral';
     }
@@ -120,7 +151,7 @@ export function AppointmentsListPage() {
             {isDoctor ? 'My Appointments' : 'All Appointments'}
           </h1>
           <p style={{ fontSize: '0.875rem', color: '#6c757d', marginTop: '4px' }}>
-            View and manage clinical appointments, schedules, and active bookings.
+            View and manage clinical appointments, arrival check-in, doctor consultations, and schedules.
           </p>
         </div>
         {canBook && (
@@ -152,14 +183,20 @@ export function AppointmentsListPage() {
           <button
             type="button"
             onClick={() => setNotification(null)}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.875rem' }}
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              color: '#6c757d',
+              fontWeight: 600,
+            }}
           >
-            ✕
+            ×
           </button>
         </div>
       )}
 
-      {/* Filters Card */}
+      {/* Filter Bar */}
       <Card>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', alignItems: 'flex-end' }}>
           {!isDoctor && (
@@ -189,9 +226,9 @@ export function AppointmentsListPage() {
                 }}
               >
                 <option value="">All Departments</option>
-                {departments.map((d) => (
-                  <option key={d.id} value={d.id}>
-                    {d.name}
+                {departments.map((dept) => (
+                  <option key={dept.id} value={dept.id}>
+                    {dept.name} ({dept.code})
                   </option>
                 ))}
               </select>
@@ -201,13 +238,13 @@ export function AppointmentsListPage() {
           {!isDoctor && (
             <div style={{ flex: '1 1 200px' }}>
               <label
-                htmlFor="filterDoc"
+                htmlFor="filterDoctor"
                 style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#495057', marginBottom: '4px' }}
               >
                 Doctor
               </label>
               <select
-                id="filterDoc"
+                id="filterDoctor"
                 value={doctorId}
                 onChange={(e) => {
                   setDoctorId(e.target.value);
@@ -259,7 +296,7 @@ export function AppointmentsListPage() {
             />
           </div>
 
-          <div style={{ flex: '1 1 150px' }}>
+          <div style={{ flex: '1 1 180px' }}>
             <label
               htmlFor="filterStatus"
               style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#495057', marginBottom: '4px' }}
@@ -285,7 +322,7 @@ export function AppointmentsListPage() {
             >
               <option value="">All Statuses</option>
               <option value="CONFIRMED">CONFIRMED</option>
-              <option value="SCHEDULED">SCHEDULED</option>
+              <option value="ARRIVED">ARRIVED (In Clinic)</option>
               <option value="COMPLETED">COMPLETED</option>
               <option value="CANCELLED">CANCELLED</option>
               <option value="NO_SHOW">NO_SHOW</option>
@@ -346,15 +383,15 @@ export function AppointmentsListPage() {
                   {!isDoctor && <th style={{ padding: '0.75rem 1rem' }}>Doctor & Dept</th>}
                   <th style={{ padding: '0.75rem 1rem' }}>Purpose</th>
                   <th style={{ padding: '0.75rem 1rem' }}>Status</th>
-                  {canBook && <th style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>Actions</th>}
+                  <th style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {appointmentsList.map((appt) => {
-                  const canCancel =
-                    canBook &&
-                    appt.status !== 'CANCELLED' &&
-                    appt.status !== 'COMPLETED';
+                  const isTerminal = appt.status === 'COMPLETED' || appt.status === 'CANCELLED';
+                  const isScheduledOrConfirmed =
+                    appt.status === 'SCHEDULED' || appt.status === 'CONFIRMED';
+                  const isArrived = appt.status === 'ARRIVED';
 
                   return (
                     <tr
@@ -375,7 +412,7 @@ export function AppointmentsListPage() {
                       <td style={{ padding: '0.75rem 1rem' }}>
                         <div style={{ fontWeight: 600, color: '#0a0a0a' }}>{appt.patient.fullName}</div>
                         <div style={{ fontSize: '0.75rem', color: '#6c757d' }}>
-                          ID: {appt.patient.patientId} · {appt.patient.phone}
+                          ID: {appt.patient.patientId || 'N/A'} · {appt.patient.phone}
                         </div>
                       </td>
 
@@ -397,6 +434,11 @@ export function AppointmentsListPage() {
                             Reason: {appt.cancellationReason}
                           </div>
                         )}
+                        {appt.arrivedAt && !isTerminal && (
+                          <div style={{ fontSize: '0.75rem', color: '#856404', marginTop: '2px' }}>
+                            Checked in at clinic
+                          </div>
+                        )}
                       </td>
 
                       <td style={{ padding: '0.75rem 1rem' }}>
@@ -405,9 +447,53 @@ export function AppointmentsListPage() {
                         </Badge>
                       </td>
 
-                      {canBook && (
-                        <td style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>
-                          {canCancel ? (
+                      <td style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>
+                        <div style={{ display: 'inline-flex', gap: '0.375rem', alignItems: 'center' }}>
+                          {/* View details */}
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            onClick={() => setSelectedDetailAppt(appt)}
+                          >
+                            Details
+                          </Button>
+
+                          {/* Receptionist / Admin: Mark as Arrived */}
+                          {canBook && isScheduledOrConfirmed && (
+                            <Button
+                              variant="primary"
+                              size="sm"
+                              onClick={() => handleMarkArrived(appt)}
+                              isLoading={markArrivedMutation.isPending}
+                            >
+                              Arrived
+                            </Button>
+                          )}
+
+                          {/* Doctor / Admin: Consultation */}
+                          {(isDoctor || isSuperAdmin) && (isArrived || isScheduledOrConfirmed) && (
+                            <Button
+                              variant="primary"
+                              size="sm"
+                              onClick={() => setApptForConsultation(appt)}
+                            >
+                              Consult
+                            </Button>
+                          )}
+
+                          {/* Receptionist / Admin: Reschedule */}
+                          {canBook && !isTerminal && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setApptToReschedule(appt)}
+                            >
+                              Reschedule
+                            </Button>
+                          )}
+
+                          {/* Receptionist / Admin: Cancel */}
+                          {canBook && !isTerminal && (
                             <Button
                               variant="danger"
                               size="sm"
@@ -415,11 +501,9 @@ export function AppointmentsListPage() {
                             >
                               Cancel
                             </Button>
-                          ) : (
-                            <span style={{ fontSize: '0.75rem', color: '#adb5bd' }}>—</span>
                           )}
-                        </td>
-                      )}
+                        </div>
+                      </td>
                     </tr>
                   );
                 })}
@@ -454,7 +538,7 @@ export function AppointmentsListPage() {
                   variant="secondary"
                   size="sm"
                   disabled={page >= totalPages}
-                  onClick={() => setPage((p) => p + 1)}
+                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 >
                   Next
                 </Button>
@@ -464,13 +548,74 @@ export function AppointmentsListPage() {
         )}
       </Card>
 
-      {/* Cancellation Modal */}
+      {/* Appointment Detail Modal */}
+      <AppointmentDetailModal
+        isOpen={Boolean(selectedDetailAppt)}
+        appointment={selectedDetailAppt}
+        currentUserRole={user?.role}
+        currentUserId={user?.id}
+        onClose={() => setSelectedDetailAppt(null)}
+        onMarkArrived={(appt) => {
+          void handleMarkArrived(appt);
+        }}
+        onComplete={(appt) => {
+          setSelectedDetailAppt(null);
+          setApptForConsultation(appt);
+        }}
+        onReschedule={(appt) => {
+          setSelectedDetailAppt(null);
+          setApptToReschedule(appt);
+        }}
+        onEdit={(appt) => {
+          setSelectedDetailAppt(null);
+          setApptToEdit(appt);
+        }}
+        onCancel={(appt) => {
+          setSelectedDetailAppt(null);
+          setAppointmentToCancel(appt);
+        }}
+      />
+
+      {/* Reschedule Modal */}
+      <RescheduleModal
+        isOpen={Boolean(apptToReschedule)}
+        appointment={apptToReschedule}
+        onClose={() => setApptToReschedule(null)}
+        onSuccess={(updated) => {
+          setNotification(`Appointment for ${updated.patient.fullName} rescheduled to ${updated.date} at ${updated.startTime}.`);
+          void refetch();
+        }}
+      />
+
+      {/* Edit Purpose / Notes Modal */}
+      <EditAppointmentModal
+        isOpen={Boolean(apptToEdit)}
+        appointment={apptToEdit}
+        onClose={() => setApptToEdit(null)}
+        onSuccess={(updated) => {
+          setNotification(`Appointment for ${updated.patient.fullName} updated successfully.`);
+          void refetch();
+        }}
+      />
+
+      {/* Consultation Notes Modal */}
+      <ConsultationNotesModal
+        isOpen={Boolean(apptForConsultation)}
+        appointment={apptForConsultation}
+        onClose={() => setApptForConsultation(null)}
+        onSuccess={(updated) => {
+          setNotification(`Consultation for ${updated.patient.fullName} completed.`);
+          void refetch();
+        }}
+      />
+
+      {/* Cancel Appointment Modal */}
       <CancelAppointmentModal
         isOpen={Boolean(appointmentToCancel)}
+        appointment={appointmentToCancel}
+        isLoading={cancelMutation.isPending}
         onClose={() => setAppointmentToCancel(null)}
         onConfirm={handleConfirmCancel}
-        isLoading={cancelMutation.isPending}
-        appointment={appointmentToCancel}
       />
     </div>
   );

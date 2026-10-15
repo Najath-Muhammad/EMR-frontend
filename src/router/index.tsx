@@ -16,6 +16,7 @@ import { SchedulesPage } from '../pages/admin/SchedulesPage';
 import { PatientsPage } from '../pages/receptionist/PatientsPage';
 import { BookAppointmentPage } from '../pages/receptionist/BookAppointmentPage';
 import { AppointmentsListPage } from '../pages/appointments/AppointmentsListPage';
+import { DoctorAppointmentsPage } from '../pages/doctor/DoctorAppointmentsPage';
 import { ActivateAccountPage } from '../pages/auth/ActivateAccountPage';
 import { APP_ROUTES } from '../constants/routes';
 import { ROLES } from '../types/auth.types';
@@ -75,7 +76,7 @@ export const router = createBrowserRouter([
             element: <ProtectedRoute allowedRoles={[ROLES.DOCTOR]} />,
             children: [
               { path: 'doctor/dashboard', element: <DoctorDashboard /> },
-              { path: 'doctor/appointments', element: <AppointmentsListPage /> },
+              { path: 'doctor/appointments', element: <DoctorAppointmentsPage /> },
               { path: 'doctor/patients', element: <PatientsPage /> },
               { path: 'doctor/schedule', element: <DoctorDashboard /> },
             ],
