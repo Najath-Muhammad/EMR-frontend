@@ -169,9 +169,11 @@ export function DepartmentsPage() {
     );
   };
 
-  const departments = data?.data?.items ?? [];
-  const total = data?.data?.total ?? 0;
-  const totalPages = data?.data?.totalPages ?? 1;
+  const departments: Department[] = Array.isArray(data?.data)
+    ? data.data
+    : (data?.data as unknown as { items?: Department[] })?.items ?? [];
+  const total = data?.meta?.total ?? (data?.data as unknown as { total?: number })?.total ?? departments.length;
+  const totalPages = data?.meta?.totalPages ?? (data?.data as unknown as { totalPages?: number })?.totalPages ?? 1;
 
   const columns: Column<Department>[] = [
     {

@@ -1,5 +1,5 @@
 import { axiosInstance } from './axiosInstance';
-import type { ApiResponse, PaginatedData, PaginationParams } from '../types/api.types';
+import type { ApiResponse, PaginationParams } from '../types/api.types';
 import type {
   Department,
   CreateDepartmentInput,
@@ -9,8 +9,8 @@ import type {
 
 export async function fetchDepartments(
   params?: PaginationParams & DepartmentFilterParams,
-): Promise<ApiResponse<PaginatedData<Department>>> {
-  const response = await axiosInstance.get<ApiResponse<PaginatedData<Department>>>(
+): Promise<ApiResponse<Department[]>> {
+  const response = await axiosInstance.get<ApiResponse<Department[]>>(
     '/departments',
     { params },
   );
@@ -18,11 +18,24 @@ export async function fetchDepartments(
 }
 
 export async function fetchActiveDepartments(): Promise<Department[]> {
-  const response = await axiosInstance.get<ApiResponse<PaginatedData<Department>>>(
-    '/departments',
-    { params: { isActive: true, limit: 100 } },
-  );
-  return response.data.data.items;
+  try {
+    const response = await axiosInstance.get<ApiResponse<Department[]>>('/departments/active');
+    if (Array.isArray(response.data.data)) {
+      return response.data.data;
+    }
+    const fallback = response.data.data as unknown as { items?: Department[] };
+    return Array.isArray(fallback?.items) ? fallback.items : [];
+  } catch {
+    // Fallback to query with isActive: true
+    const fallbackResponse = await axiosInstance.get<ApiResponse<Department[]>>('/departments', {
+      params: { isActive: true, limit: 100 },
+    });
+    if (Array.isArray(fallbackResponse.data.data)) {
+      return fallbackResponse.data.data;
+    }
+    const fallback = fallbackResponse.data.data as unknown as { items?: Department[] };
+    return Array.isArray(fallback?.items) ? fallback.items : [];
+  }
 }
 
 export async function fetchDepartmentById(id: string): Promise<ApiResponse<Department>> {

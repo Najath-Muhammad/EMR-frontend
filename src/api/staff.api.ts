@@ -1,5 +1,5 @@
 import { axiosInstance } from './axiosInstance';
-import type { ApiResponse, PaginatedData, PaginationParams } from '../types/api.types';
+import type { ApiResponse, PaginationParams } from '../types/api.types';
 import type {
   StaffMember,
   StaffCreationResult,
@@ -11,8 +11,8 @@ import type {
 
 export async function fetchStaff(
   params?: PaginationParams & StaffFilterParams,
-): Promise<ApiResponse<PaginatedData<StaffMember>>> {
-  const response = await axiosInstance.get<ApiResponse<PaginatedData<StaffMember>>>('/staff', {
+): Promise<ApiResponse<StaffMember[]>> {
+  const response = await axiosInstance.get<ApiResponse<StaffMember[]>>('/staff', {
     params,
   });
   return response.data;

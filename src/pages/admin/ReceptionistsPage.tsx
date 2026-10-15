@@ -202,9 +202,11 @@ export function ReceptionistsPage() {
     });
   };
 
-  const receptionists = data?.data?.items ?? [];
-  const total = data?.data?.total ?? 0;
-  const totalPages = data?.data?.totalPages ?? 1;
+  const receptionists: StaffMember[] = Array.isArray(data?.data)
+    ? data.data
+    : (data?.data as unknown as { items?: StaffMember[] })?.items ?? [];
+  const total = data?.meta?.total ?? (data?.data as unknown as { total?: number })?.total ?? receptionists.length;
+  const totalPages = data?.meta?.totalPages ?? (data?.data as unknown as { totalPages?: number })?.totalPages ?? 1;
 
   const departmentOptions = activeDepartments.map((d) => ({
     value: d.id,
