@@ -16,6 +16,7 @@ import { SchedulesPage } from '../pages/admin/SchedulesPage';
 import { PatientsPage } from '../pages/receptionist/PatientsPage';
 import { BookAppointmentPage } from '../pages/receptionist/BookAppointmentPage';
 import { AppointmentsListPage } from '../pages/appointments/AppointmentsListPage';
+import { AuditTrailPage } from '../pages/admin/AuditTrailPage';
 import { DoctorAppointmentsPage } from '../pages/doctor/DoctorAppointmentsPage';
 import { ActivateAccountPage } from '../pages/auth/ActivateAccountPage';
 import { APP_ROUTES } from '../constants/routes';
@@ -57,6 +58,7 @@ export const router = createBrowserRouter([
               { path: 'admin/schedules', element: <SchedulesPage /> },
               { path: 'admin/patients', element: <PatientsPage /> },
               { path: 'admin/appointments', element: <AppointmentsListPage /> },
+              { path: 'admin/audit-logs', element: <AuditTrailPage /> },
             ],
           },
 

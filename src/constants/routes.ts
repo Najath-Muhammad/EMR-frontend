@@ -11,6 +11,7 @@ export const APP_ROUTES = {
   SCHEDULES: '/admin/schedules',
   ALL_APPOINTMENTS: '/admin/appointments',
   ADMIN_PATIENTS: '/admin/patients',
+  AUDIT_LOGS: '/admin/audit-logs',
   PATIENTS: '/receptionist/patients',
   APPOINTMENTS_BOOKING: '/receptionist/appointments',
   RECEPTIONIST_APPOINTMENTS_LIST: '/receptionist/appointments-list',

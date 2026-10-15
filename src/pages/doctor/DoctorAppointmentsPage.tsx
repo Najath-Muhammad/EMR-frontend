@@ -7,10 +7,12 @@ import { AppointmentDetailModal } from '../../components/appointments/Appointmen
 import { ConsultationNotesModal } from '../../components/appointments/ConsultationNotesModal';
 import { useAppointments } from '../../hooks/useAppointments';
 import { useAuth } from '../../hooks/useAuth';
+import { useSocket } from '../../hooks/useSocket';
 import { Appointment, AppointmentStatus } from '../../types/appointment.types';
 
 export function DoctorAppointmentsPage() {
   const { user } = useAuth();
+  const { isConnected, isReconnecting, lastEvent, clearLastEvent } = useSocket();
   const todayStr = useMemo(() => new Date().toISOString().split('T')[0] as string, []);
 
   const [dateFilter, setDateFilter] = useState(todayStr);
@@ -72,14 +74,54 @@ export function DoctorAppointmentsPage() {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#0a0a0a', margin: 0 }}>
-            Physician Clinical Portal
-          </h1>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#0a0a0a', margin: 0 }}>
+              Physician Clinical Portal
+            </h1>
+            <Badge variant={isConnected ? 'success' : isReconnecting ? 'warning' : 'neutral'}>
+              {isConnected ? '● Live' : isReconnecting ? '↻ Reconnecting...' : '○ Offline'}
+            </Badge>
+          </div>
           <p style={{ fontSize: '0.875rem', color: '#6c757d', marginTop: '4px' }}>
             Welcome, Dr. {user?.name}. Manage your patient appointments and clinical consultations.
           </p>
         </div>
       </div>
+
+      {lastEvent && (
+        <div
+          style={{
+            padding: '0.75rem 1rem',
+            backgroundColor: '#eff6ff',
+            border: '1px solid #bfdbfe',
+            borderRadius: '6px',
+            color: '#1e40af',
+            fontSize: '0.875rem',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span style={{ fontSize: '1.1rem' }}>⚡</span>
+            <span style={{ fontWeight: 500 }}>{lastEvent.message}</span>
+          </div>
+          <button
+            onClick={clearLastEvent}
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              color: '#3b82f6',
+              fontWeight: 600,
+              fontSize: '0.875rem',
+            }}
+          >
+            ✕
+          </button>
+        </div>
+      )}
 
       {notification && (
         <div

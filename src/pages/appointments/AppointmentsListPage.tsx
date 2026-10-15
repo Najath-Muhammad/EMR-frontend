@@ -18,6 +18,7 @@ import {
 import { useActiveDepartments } from '../../hooks/useDepartments';
 import { useDoctors } from '../../hooks/useDoctorSchedule';
 import { useAuth } from '../../hooks/useAuth';
+import { useSocket } from '../../hooks/useSocket';
 import { Appointment, AppointmentStatus } from '../../types/appointment.types';
 import { ROLES } from '../../types/auth.types';
 import { APP_ROUTES } from '../../constants/routes';
@@ -25,6 +26,7 @@ import { APP_ROUTES } from '../../constants/routes';
 export function AppointmentsListPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { isConnected, isReconnecting, lastEvent, clearLastEvent } = useSocket();
   const isDoctor = user?.role === ROLES.DOCTOR;
   const isReceptionist = user?.role === ROLES.RECEPTIONIST;
   const isSuperAdmin = user?.role === ROLES.SUPER_ADMIN;
@@ -213,9 +215,14 @@ export function AppointmentsListPage() {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#0a0a0a', margin: 0 }}>
-            {isDoctor ? 'My Appointments' : 'All Appointments'}
-          </h1>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#0a0a0a', margin: 0 }}>
+              {isDoctor ? 'My Appointments' : 'All Appointments'}
+            </h1>
+            <Badge variant={isConnected ? 'success' : isReconnecting ? 'warning' : 'neutral'}>
+              {isConnected ? '● Live' : isReconnecting ? '↻ Reconnecting...' : '○ Offline'}
+            </Badge>
+          </div>
           <p style={{ fontSize: '0.875rem', color: '#6c757d', marginTop: '4px' }}>
             View and manage clinical appointments, arrival check-in, doctor consultations, and schedules.
           </p>
@@ -229,6 +236,42 @@ export function AppointmentsListPage() {
           </Button>
         )}
       </div>
+
+      {/* Real-time Event Notification Banner */}
+      {lastEvent && (
+        <div
+          style={{
+            padding: '0.75rem 1rem',
+            backgroundColor: '#eff6ff',
+            border: '1px solid #bfdbfe',
+            borderRadius: '6px',
+            color: '#1e40af',
+            fontSize: '0.875rem',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span style={{ fontSize: '1.1rem' }}>⚡</span>
+            <span style={{ fontWeight: 500 }}>{lastEvent.message}</span>
+          </div>
+          <button
+            onClick={clearLastEvent}
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              color: '#3b82f6',
+              fontWeight: 600,
+              fontSize: '0.875rem',
+            }}
+          >
+            ✕
+          </button>
+        </div>
+      )}
 
       {/* Notification Banner */}
       {notification && (
