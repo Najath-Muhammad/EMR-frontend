@@ -13,6 +13,7 @@ import { DepartmentsPage } from '../pages/admin/DepartmentsPage';
 import { DoctorsPage } from '../pages/admin/DoctorsPage';
 import { ReceptionistsPage } from '../pages/admin/ReceptionistsPage';
 import { SchedulesPage } from '../pages/admin/SchedulesPage';
+import { PatientsPage } from '../pages/receptionist/PatientsPage';
 import { ActivateAccountPage } from '../pages/auth/ActivateAccountPage';
 import { APP_ROUTES } from '../constants/routes';
 import { ROLES } from '../types/auth.types';
@@ -51,6 +52,7 @@ export const router = createBrowserRouter([
               { path: 'admin/doctors', element: <DoctorsPage /> },
               { path: 'admin/receptionists', element: <ReceptionistsPage /> },
               { path: 'admin/schedules', element: <SchedulesPage /> },
+              { path: 'admin/patients', element: <PatientsPage /> },
               { path: 'admin/appointments', element: <SuperAdminDashboard /> },
             ],
           },
@@ -60,7 +62,7 @@ export const router = createBrowserRouter([
             element: <ProtectedRoute allowedRoles={[ROLES.RECEPTIONIST]} />,
             children: [
               { path: 'receptionist/dashboard', element: <ReceptionistDashboard /> },
-              { path: 'receptionist/patients', element: <ReceptionistDashboard /> },
+              { path: 'receptionist/patients', element: <PatientsPage /> },
               { path: 'receptionist/appointments', element: <ReceptionistDashboard /> },
             ],
           },
@@ -71,7 +73,7 @@ export const router = createBrowserRouter([
             children: [
               { path: 'doctor/dashboard', element: <DoctorDashboard /> },
               { path: 'doctor/appointments', element: <DoctorDashboard /> },
-              { path: 'doctor/patients', element: <DoctorDashboard /> },
+              { path: 'doctor/patients', element: <PatientsPage /> },
               { path: 'doctor/schedule', element: <DoctorDashboard /> },
             ],
           },

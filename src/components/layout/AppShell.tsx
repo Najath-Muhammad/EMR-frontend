@@ -3,14 +3,21 @@ import { Sidebar } from './Sidebar';
 import { Header } from './Header';
 
 const routeTitles: Record<string, string> = {
-  '/dashboard':    'Dashboard',
-  '/departments':  'Departments',
-  '/doctors':      'Doctors',
-  '/receptionists':'Receptionists',
-  '/patients':     'Patients',
-  '/appointments': 'Appointments',
-  '/schedules':    'Schedules',
-  '/':             'Overview',
+  '/admin/dashboard': 'Admin Dashboard',
+  '/admin/departments': 'Department Management',
+  '/admin/doctors': 'Doctor Management',
+  '/admin/receptionists': 'Receptionist Management',
+  '/admin/schedules': 'Doctor Schedule Management',
+  '/admin/patients': 'Patient Directory',
+  '/admin/appointments': 'All Appointments',
+  '/receptionist/dashboard': 'Reception Desk',
+  '/receptionist/patients': 'Patient Directory',
+  '/receptionist/appointments': 'Book Appointment',
+  '/doctor/dashboard': 'Doctor Dashboard',
+  '/doctor/appointments': 'My Appointments',
+  '/doctor/patients': 'Patient Records',
+  '/doctor/schedule': 'My Schedule',
+  '/': 'Overview',
 };
 
 export function AppShell() {
