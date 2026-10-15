@@ -22,7 +22,8 @@ const roleNavMap: Record<Role, NavItem[]> = {
   [ROLES.RECEPTIONIST]: [
     { label: 'Reception Desk',  path: APP_ROUTES.RECEPTIONIST_DASHBOARD, icon: '⊡' },
     { label: 'Patient Records', path: APP_ROUTES.PATIENTS,              icon: '□' },
-    { label: 'Book Appointment',path: APP_ROUTES.APPOINTMENTS_BOOKING,  icon: '▦' },
+    { label: 'Book Appointment',path: APP_ROUTES.APPOINTMENTS_BOOKING,  icon: '✚' },
+    { label: 'Appointments List', path: APP_ROUTES.RECEPTIONIST_APPOINTMENTS_LIST, icon: '▦' },
   ],
   [ROLES.DOCTOR]: [
     { label: 'Doctor Dashboard',path: APP_ROUTES.DOCTOR_DASHBOARD,    icon: '⊡' },
