@@ -12,6 +12,7 @@ import { DoctorDashboard } from '../pages/dashboards/DoctorDashboard';
 import { DepartmentsPage } from '../pages/admin/DepartmentsPage';
 import { DoctorsPage } from '../pages/admin/DoctorsPage';
 import { ReceptionistsPage } from '../pages/admin/ReceptionistsPage';
+import { SchedulesPage } from '../pages/admin/SchedulesPage';
 import { ActivateAccountPage } from '../pages/auth/ActivateAccountPage';
 import { APP_ROUTES } from '../constants/routes';
 import { ROLES } from '../types/auth.types';
@@ -49,7 +50,7 @@ export const router = createBrowserRouter([
               { path: 'admin/departments', element: <DepartmentsPage /> },
               { path: 'admin/doctors', element: <DoctorsPage /> },
               { path: 'admin/receptionists', element: <ReceptionistsPage /> },
-              { path: 'admin/schedules', element: <SuperAdminDashboard /> },
+              { path: 'admin/schedules', element: <SchedulesPage /> },
               { path: 'admin/appointments', element: <SuperAdminDashboard /> },
             ],
           },
