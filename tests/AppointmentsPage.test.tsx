@@ -190,4 +190,134 @@ describe('AppointmentsListPage', () => {
       expect(screen.getByRole('status')).toBeDefined();
     });
   });
+
+  it('triggers debounced server-side search when typing in search input', async () => {
+    const user = userEvent.setup();
+    renderComponent();
+
+    await waitFor(() => expect(screen.getByText('John Doe')).toBeDefined());
+
+    const searchInput = screen.getByLabelText(/Search appointments/i);
+    await user.type(searchInput, 'John');
+
+    await waitFor(
+      () => {
+        expect(appointmentApi.fetchAppointments).toHaveBeenCalledWith(
+          expect.objectContaining({
+            search: 'John',
+            page: 1,
+          }),
+        );
+      },
+      { timeout: 1500 },
+    );
+  });
+
+  it('triggers server-side query with date range filters', async () => {
+    const user = userEvent.setup();
+    renderComponent();
+
+    await waitFor(() => expect(screen.getByText('John Doe')).toBeDefined());
+
+    const fromDateInput = screen.getByLabelText(/From Date/i);
+    const toDateInput = screen.getByLabelText(/To Date/i);
+
+    await user.type(fromDateInput, '2030-01-01');
+    await user.type(toDateInput, '2030-01-15');
+
+    await waitFor(() => {
+      expect(appointmentApi.fetchAppointments).toHaveBeenCalledWith(
+        expect.objectContaining({
+          startDate: '2030-01-01',
+          endDate: '2030-01-15',
+          page: 1,
+        }),
+      );
+    });
+  });
+
+  it('toggles column sorting and triggers server-side query with sortBy and sortOrder', async () => {
+    const user = userEvent.setup();
+    renderComponent();
+
+    await waitFor(() => expect(screen.getByText('John Doe')).toBeDefined());
+
+    // Click Date & Time header to toggle asc -> desc
+    const dateTimeHeader = screen.getByRole('columnheader', { name: /Date & Time/i });
+    await user.click(dateTimeHeader);
+
+    await waitFor(() => {
+      expect(appointmentApi.fetchAppointments).toHaveBeenCalledWith(
+        expect.objectContaining({
+          sortBy: 'date',
+          sortOrder: 'desc',
+        }),
+      );
+    });
+
+    // Click Status header to sort by status asc
+    const statusHeader = screen.getByRole('columnheader', { name: /Status/i });
+    await user.click(statusHeader);
+
+    await waitFor(() => {
+      expect(appointmentApi.fetchAppointments).toHaveBeenCalledWith(
+        expect.objectContaining({
+          sortBy: 'status',
+          sortOrder: 'asc',
+        }),
+      );
+    });
+  });
+
+  it('updates rows per page limit and resets page to 1', async () => {
+    const user = userEvent.setup();
+    renderComponent();
+
+    await waitFor(() => expect(screen.getByText('John Doe')).toBeDefined());
+
+    const rowsSelect = screen.getByLabelText(/Rows per page/i);
+    await user.selectOptions(rowsSelect, '25');
+
+    await waitFor(() => {
+      expect(appointmentApi.fetchAppointments).toHaveBeenCalledWith(
+        expect.objectContaining({
+          limit: 25,
+          page: 1,
+        }),
+      );
+    });
+  });
+
+  it('resets all filters when clicking Clear Filters', async () => {
+    const user = userEvent.setup();
+    renderComponent();
+
+    await waitFor(() => expect(screen.getByText('John Doe')).toBeDefined());
+
+    // Set a status filter to make Clear Filters button appear
+    const statusSelect = screen.getByLabelText(/Status/i);
+    await user.selectOptions(statusSelect, 'ARRIVED');
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /Clear Filters/i })).toBeDefined();
+    });
+
+    // Click Clear Filters
+    const clearBtn = screen.getByRole('button', { name: /Clear Filters/i });
+    await user.click(clearBtn);
+
+    await waitFor(() => {
+      expect(appointmentApi.fetchAppointments).toHaveBeenCalledWith(
+        expect.objectContaining({
+          status: undefined,
+          search: undefined,
+          startDate: undefined,
+          endDate: undefined,
+          sortBy: 'date',
+          sortOrder: 'asc',
+          page: 1,
+        }),
+      );
+    });
+  });
 });

@@ -9,6 +9,7 @@ import { AppointmentDetailModal } from '../../components/appointments/Appointmen
 import { RescheduleModal } from '../../components/appointments/RescheduleModal';
 import { EditAppointmentModal } from '../../components/appointments/EditAppointmentModal';
 import { ConsultationNotesModal } from '../../components/appointments/ConsultationNotesModal';
+import { SearchInput } from '../../components/ui/SearchInput';
 import {
   useAppointments,
   useCancelAppointment,
@@ -42,13 +43,52 @@ export function AppointmentsListPage() {
     return null;
   }, [user]);
 
-  // Filter States
+  // Filter & Query States
+  const [search, setSearch] = useState('');
   const [departmentId, setDepartmentId] = useState(receptionistDeptId || '');
   const [doctorId, setDoctorId] = useState('');
-  const [date, setDate] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
   const [status, setStatus] = useState<AppointmentStatus | ''>('');
+  const [sortBy, setSortBy] = useState<'date' | 'startTime' | 'createdAt' | 'status'>('date');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [page, setPage] = useState(1);
-  const limit = 15;
+  const [limit, setLimit] = useState(15);
+
+  const handleSort = (field: 'date' | 'startTime' | 'createdAt' | 'status') => {
+    if (sortBy === field) {
+      setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+    } else {
+      setSortBy(field);
+      setSortOrder('asc');
+    }
+    setPage(1);
+  };
+
+  const handleClearFilters = () => {
+    setSearch('');
+    if (!isReceptionist) {
+      setDepartmentId('');
+    }
+    setDoctorId('');
+    setStartDate('');
+    setEndDate('');
+    setStatus('');
+    setSortBy('date');
+    setSortOrder('asc');
+    setPage(1);
+  };
+
+  const hasActiveFilters = Boolean(
+    search ||
+      (!isReceptionist && departmentId) ||
+      doctorId ||
+      startDate ||
+      endDate ||
+      status ||
+      sortBy !== 'date' ||
+      sortOrder !== 'asc',
+  );
 
   // Lock department for receptionist
   useEffect(() => {
@@ -92,10 +132,14 @@ export function AppointmentsListPage() {
   const { data: appointmentData, isLoading, refetch } = useAppointments({
     page,
     limit,
+    search: search || undefined,
     departmentId: effectiveDepartmentId,
     doctorId: isDoctor ? undefined : doctorId || undefined,
-    date: date || undefined,
+    startDate: startDate || undefined,
+    endDate: endDate || undefined,
     status: (status as AppointmentStatus) || undefined,
+    sortBy,
+    sortOrder,
   });
 
   const appointmentsList = useMemo(() => {
@@ -220,179 +264,215 @@ export function AppointmentsListPage() {
 
       {/* Filter Bar */}
       <Card>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', alignItems: 'flex-end' }}>
-          {isReceptionist ? (
-            <div style={{ flex: '1 1 200px' }}>
-              <label
-                style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#495057', marginBottom: '4px' }}
-              >
-                Department
-              </label>
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  padding: '6px 10px',
-                  background: '#f8f9fa',
-                  border: '1px solid #ced4da',
-                  borderRadius: '6px',
-                  fontSize: '0.875rem',
-                  fontWeight: 600,
-                  color: '#212529',
-                }}
-              >
-                <span>
-                  {departments.find((d) => d.id === receptionistDeptId)?.name || 'Your Department'}
-                </span>
-                <Badge variant="neutral">Your Department</Badge>
-              </div>
-            </div>
-          ) : isSuperAdmin ? (
-            <div style={{ flex: '1 1 200px' }}>
-              <label
-                htmlFor="filterDept"
-                style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#495057', marginBottom: '4px' }}
-              >
-                Department
-              </label>
-              <select
-                id="filterDept"
-                value={departmentId}
-                onChange={(e) => {
-                  setDepartmentId(e.target.value);
-                  setDoctorId('');
-                  setPage(1);
-                }}
-                style={{
-                  width: '100%',
-                  padding: '6px 10px',
-                  borderRadius: '6px',
-                  border: '1px solid #ced4da',
-                  fontSize: '0.875rem',
-                  outline: 'none',
-                  background: '#ffffff',
-                }}
-              >
-                <option value="">All Departments</option>
-                {departments.map((dept) => (
-                  <option key={dept.id} value={dept.id}>
-                    {dept.name} ({dept.code})
-                  </option>
-                ))}
-              </select>
-            </div>
-          ) : null}
-
-          {!isDoctor && (
-            <div style={{ flex: '1 1 200px' }}>
-              <label
-                htmlFor="filterDoctor"
-                style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#495057', marginBottom: '4px' }}
-              >
-                Doctor
-              </label>
-              <select
-                id="filterDoctor"
-                value={doctorId}
-                onChange={(e) => {
-                  setDoctorId(e.target.value);
-                  setPage(1);
-                }}
-                style={{
-                  width: '100%',
-                  padding: '6px 10px',
-                  borderRadius: '6px',
-                  border: '1px solid #ced4da',
-                  fontSize: '0.875rem',
-                  outline: 'none',
-                  background: '#ffffff',
-                }}
-              >
-                <option value="">All Doctors</option>
-                {doctors.map((doc) => (
-                  <option key={doc.id} value={doc.id}>
-                    {doc.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-
-          <div style={{ flex: '1 1 150px' }}>
-            <label
-              htmlFor="filterDate"
-              style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#495057', marginBottom: '4px' }}
-            >
-              Date
-            </label>
-            <input
-              id="filterDate"
-              type="date"
-              value={date}
-              onChange={(e) => {
-                setDate(e.target.value);
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          {/* Search Bar Row */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap' }}>
+            <SearchInput
+              value={search}
+              onChange={(val) => {
+                setSearch(val);
                 setPage(1);
               }}
-              style={{
-                width: '100%',
-                padding: '6px 10px',
-                borderRadius: '6px',
-                border: '1px solid #ced4da',
-                fontSize: '0.875rem',
-                outline: 'none',
-              }}
+              placeholder="Search patient name, ID, or phone..."
+              ariaLabel="Search appointments"
+              style={{ maxWidth: '420px', flex: '1 1 300px' }}
             />
+            {hasActiveFilters && (
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={handleClearFilters}
+              >
+                Clear Filters
+              </Button>
+            )}
           </div>
 
-          <div style={{ flex: '1 1 180px' }}>
-            <label
-              htmlFor="filterStatus"
-              style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#495057', marginBottom: '4px' }}
-            >
-              Status
-            </label>
-            <select
-              id="filterStatus"
-              value={status}
-              onChange={(e) => {
-                setStatus(e.target.value as AppointmentStatus | '');
-                setPage(1);
-              }}
-              style={{
-                width: '100%',
-                padding: '6px 10px',
-                borderRadius: '6px',
-                border: '1px solid #ced4da',
-                fontSize: '0.875rem',
-                outline: 'none',
-                background: '#ffffff',
-              }}
-            >
-              <option value="">All Statuses</option>
-              <option value="CONFIRMED">CONFIRMED</option>
-              <option value="ARRIVED">ARRIVED (In Clinic)</option>
-              <option value="COMPLETED">COMPLETED</option>
-              <option value="CANCELLED">CANCELLED</option>
-              <option value="NO_SHOW">NO_SHOW</option>
-            </select>
-          </div>
+          {/* Filter Controls Row */}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', alignItems: 'flex-end' }}>
+            {isReceptionist ? (
+              <div style={{ flex: '1 1 180px' }}>
+                <label
+                  style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#495057', marginBottom: '4px' }}
+                >
+                  Department
+                </label>
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    padding: '6px 10px',
+                    background: '#f8f9fa',
+                    border: '1px solid #ced4da',
+                    borderRadius: '6px',
+                    fontSize: '0.875rem',
+                    fontWeight: 600,
+                    color: '#212529',
+                  }}
+                >
+                  <span>
+                    {departments.find((d) => d.id === receptionistDeptId)?.name || 'Your Department'}
+                  </span>
+                  <Badge variant="neutral">Your Department</Badge>
+                </div>
+              </div>
+            ) : isSuperAdmin ? (
+              <div style={{ flex: '1 1 180px' }}>
+                <label
+                  htmlFor="filterDept"
+                  style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#495057', marginBottom: '4px' }}
+                >
+                  Department
+                </label>
+                <select
+                  id="filterDept"
+                  value={departmentId}
+                  onChange={(e) => {
+                    setDepartmentId(e.target.value);
+                    setDoctorId('');
+                    setPage(1);
+                  }}
+                  style={{
+                    width: '100%',
+                    padding: '6px 10px',
+                    borderRadius: '6px',
+                    border: '1px solid #ced4da',
+                    fontSize: '0.875rem',
+                    outline: 'none',
+                    background: '#ffffff',
+                  }}
+                >
+                  <option value="">All Departments</option>
+                  {departments.map((dept) => (
+                    <option key={dept.id} value={dept.id}>
+                      {dept.name} ({dept.code})
+                    </option>
+                  ))}
+                </select>
+              </div>
+            ) : null}
 
-          {(departmentId || doctorId || date || status) && (
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={() => {
-                setDepartmentId('');
-                setDoctorId('');
-                setDate('');
-                setStatus('');
-                setPage(1);
-              }}
-            >
-              Clear Filters
-            </Button>
-          )}
+            {!isDoctor && (
+              <div style={{ flex: '1 1 180px' }}>
+                <label
+                  htmlFor="filterDoctor"
+                  style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#495057', marginBottom: '4px' }}
+                >
+                  Doctor
+                </label>
+                <select
+                  id="filterDoctor"
+                  value={doctorId}
+                  onChange={(e) => {
+                    setDoctorId(e.target.value);
+                    setPage(1);
+                  }}
+                  style={{
+                    width: '100%',
+                    padding: '6px 10px',
+                    borderRadius: '6px',
+                    border: '1px solid #ced4da',
+                    fontSize: '0.875rem',
+                    outline: 'none',
+                    background: '#ffffff',
+                  }}
+                >
+                  <option value="">All Doctors</option>
+                  {doctors.map((doc) => (
+                    <option key={doc.id} value={doc.id}>
+                      {doc.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            <div style={{ flex: '1 1 140px' }}>
+              <label
+                htmlFor="filterStartDate"
+                style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#495057', marginBottom: '4px' }}
+              >
+                From Date
+              </label>
+              <input
+                id="filterStartDate"
+                type="date"
+                value={startDate}
+                onChange={(e) => {
+                  setStartDate(e.target.value);
+                  setPage(1);
+                }}
+                style={{
+                  width: '100%',
+                  padding: '6px 10px',
+                  borderRadius: '6px',
+                  border: '1px solid #ced4da',
+                  fontSize: '0.875rem',
+                  outline: 'none',
+                }}
+              />
+            </div>
+
+            <div style={{ flex: '1 1 140px' }}>
+              <label
+                htmlFor="filterEndDate"
+                style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#495057', marginBottom: '4px' }}
+              >
+                To Date
+              </label>
+              <input
+                id="filterEndDate"
+                type="date"
+                value={endDate}
+                onChange={(e) => {
+                  setEndDate(e.target.value);
+                  setPage(1);
+                }}
+                style={{
+                  width: '100%',
+                  padding: '6px 10px',
+                  borderRadius: '6px',
+                  border: '1px solid #ced4da',
+                  fontSize: '0.875rem',
+                  outline: 'none',
+                }}
+              />
+            </div>
+
+            <div style={{ flex: '1 1 160px' }}>
+              <label
+                htmlFor="filterStatus"
+                style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#495057', marginBottom: '4px' }}
+              >
+                Status
+              </label>
+              <select
+                id="filterStatus"
+                value={status}
+                onChange={(e) => {
+                  setStatus(e.target.value as AppointmentStatus | '');
+                  setPage(1);
+                }}
+                style={{
+                  width: '100%',
+                  padding: '6px 10px',
+                  borderRadius: '6px',
+                  border: '1px solid #ced4da',
+                  fontSize: '0.875rem',
+                  outline: 'none',
+                  background: '#ffffff',
+                }}
+              >
+                <option value="">All Statuses</option>
+                <option value="CONFIRMED">CONFIRMED</option>
+                <option value="ARRIVED">ARRIVED (In Clinic)</option>
+                <option value="COMPLETED">COMPLETED</option>
+                <option value="CANCELLED">CANCELLED</option>
+                <option value="NO_SHOW">NO_SHOW</option>
+              </select>
+            </div>
+          </div>
         </div>
       </Card>
 
@@ -427,11 +507,31 @@ export function AppointmentsListPage() {
             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.875rem' }}>
               <thead>
                 <tr style={{ borderBottom: '1px solid #dee2e6', color: '#6c757d', fontSize: '0.75rem', textTransform: 'uppercase' }}>
-                  <th style={{ padding: '0.75rem 1rem' }}>Date & Time</th>
+                  <th
+                    style={{ padding: '0.75rem 1rem', cursor: 'pointer', userSelect: 'none' }}
+                    onClick={() => handleSort('date')}
+                  >
+                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                      <span>Date & Time</span>
+                      <span style={{ fontSize: '0.7rem', color: sortBy === 'date' ? '#0a0a0a' : '#adb5bd' }}>
+                        {sortBy === 'date' ? (sortOrder === 'asc' ? '▲' : '▼') : '⇅'}
+                      </span>
+                    </div>
+                  </th>
                   <th style={{ padding: '0.75rem 1rem' }}>Patient</th>
                   {!isDoctor && <th style={{ padding: '0.75rem 1rem' }}>Doctor & Dept</th>}
                   <th style={{ padding: '0.75rem 1rem' }}>Purpose</th>
-                  <th style={{ padding: '0.75rem 1rem' }}>Status</th>
+                  <th
+                    style={{ padding: '0.75rem 1rem', cursor: 'pointer', userSelect: 'none' }}
+                    onClick={() => handleSort('status')}
+                  >
+                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                      <span>Status</span>
+                      <span style={{ fontSize: '0.7rem', color: sortBy === 'status' ? '#0a0a0a' : '#adb5bd' }}>
+                        {sortBy === 'status' ? (sortOrder === 'asc' ? '▲' : '▼') : '⇅'}
+                      </span>
+                    </div>
+                  </th>
                   <th style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>Actions</th>
                 </tr>
               </thead>
@@ -565,20 +665,53 @@ export function AppointmentsListPage() {
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                padding: '1rem',
+                padding: '0.75rem 1rem',
                 borderTop: '1px solid #dee2e6',
+                background: '#f8f9fa',
                 fontSize: '0.8125rem',
                 color: '#6c757d',
+                flexWrap: 'wrap',
+                gap: '0.75rem',
               }}
             >
-              <span>
-                Total: <strong>{total}</strong> appointments (Page {page} of {totalPages})
-              </span>
-              <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                <span>
+                  Showing {appointmentsList.length === 0 ? 0 : (page - 1) * limit + 1}–
+                  {Math.min(page * limit, total)} of {total} appointments
+                </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
+                  <span>Rows:</span>
+                  <select
+                    aria-label="Rows per page"
+                    value={limit}
+                    onChange={(e) => {
+                      setLimit(Number(e.target.value));
+                      setPage(1);
+                    }}
+                    style={{
+                      padding: '2px 6px',
+                      borderRadius: '4px',
+                      border: '1px solid #ced4da',
+                      fontSize: '0.8125rem',
+                      background: '#ffffff',
+                    }}
+                  >
+                    <option value={10}>10</option>
+                    <option value={15}>15</option>
+                    <option value={25}>25</option>
+                    <option value={50}>50</option>
+                  </select>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span style={{ fontSize: '0.8125rem', color: '#6c757d' }}>
+                  Page {page} of {Math.max(1, totalPages)}
+                </span>
                 <Button
                   variant="secondary"
                   size="sm"
-                  disabled={page <= 1}
+                  disabled={page <= 1 || isLoading}
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                 >
                   Previous
@@ -586,7 +719,7 @@ export function AppointmentsListPage() {
                 <Button
                   variant="secondary"
                   size="sm"
-                  disabled={page >= totalPages}
+                  disabled={page >= totalPages || isLoading}
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 >
                   Next

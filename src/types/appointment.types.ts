@@ -106,13 +106,16 @@ export interface CancelAppointmentInput {
 export interface AppointmentQueryParams {
   page?: number;
   limit?: number;
+  search?: string;
   doctorId?: string;
   patientId?: string;
   departmentId?: string;
   date?: string;
   status?: AppointmentStatus;
+  startDate?: string;
+  endDate?: string;
   fromDate?: string;
   toDate?: string;
-  sortBy?: 'date' | 'startTime' | 'createdAt';
+  sortBy?: 'date' | 'startTime' | 'createdAt' | 'status';
   sortOrder?: 'asc' | 'desc';
 }
