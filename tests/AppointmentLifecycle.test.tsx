@@ -246,6 +246,38 @@ describe('Phase 6 — Frontend Appointment Lifecycle & Workflows', () => {
       });
     });
 
+    it('locks department filter to receptionist assigned department in AppointmentsListPage', async () => {
+      vi.mocked(useAuth).mockReturnValue({
+        user: {
+          id: 'u-rec',
+          name: 'Receptionist Jane',
+          email: 'jane@hospital.com',
+          role: 'RECEPTIONIST',
+          department: 'dept-1',
+          isActive: true,
+          createdAt: '',
+        },
+        isAuthenticated: true,
+        isLoading: false,
+        login: vi.fn(),
+        logout: vi.fn(),
+      });
+
+      createTestWrapper(<AppointmentsListPage />);
+
+      await waitFor(() => {
+        expect(screen.getByText('Your Department')).toBeInTheDocument();
+      });
+
+      // Department select combobox should NOT be present for receptionist
+      expect(screen.queryByRole('combobox', { name: /department/i })).not.toBeInTheDocument();
+
+      // fetchAppointments must be called with departmentId: 'dept-1'
+      expect(appointmentApi.fetchAppointments).toHaveBeenCalledWith(
+        expect.objectContaining({ departmentId: 'dept-1' }),
+      );
+    });
+
     it('opens detailed view modal with audit trail and consultation notes', async () => {
       vi.mocked(useAuth).mockReturnValue({
         user: {

@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
@@ -29,13 +29,33 @@ export function AppointmentsListPage() {
   const isSuperAdmin = user?.role === ROLES.SUPER_ADMIN;
   const canBook = isSuperAdmin || isReceptionist;
 
+  const receptionistDeptId = useMemo(() => {
+    if (!user || user.role !== ROLES.RECEPTIONIST) return null;
+    if (typeof user.department === 'string') return user.department;
+    if (user.department && typeof user.department === 'object') {
+      return (
+        (user.department as { id?: string; _id?: string }).id ||
+        (user.department as { id?: string; _id?: string })._id ||
+        null
+      );
+    }
+    return null;
+  }, [user]);
+
   // Filter States
-  const [departmentId, setDepartmentId] = useState('');
+  const [departmentId, setDepartmentId] = useState(receptionistDeptId || '');
   const [doctorId, setDoctorId] = useState('');
   const [date, setDate] = useState('');
   const [status, setStatus] = useState<AppointmentStatus | ''>('');
   const [page, setPage] = useState(1);
   const limit = 15;
+
+  // Lock department for receptionist
+  useEffect(() => {
+    if (isReceptionist && receptionistDeptId && departmentId !== receptionistDeptId) {
+      setDepartmentId(receptionistDeptId);
+    }
+  }, [isReceptionist, receptionistDeptId, departmentId]);
 
   // Modals
   const [appointmentToCancel, setAppointmentToCancel] = useState<Appointment | null>(null);
@@ -57,8 +77,10 @@ export function AppointmentsListPage() {
     return [];
   }, [deptData]);
 
+  const effectiveDepartmentId = isReceptionist ? (receptionistDeptId || undefined) : (departmentId || undefined);
+
   const { data: doctorData } = useDoctors({
-    department: departmentId || undefined,
+    department: effectiveDepartmentId,
   });
   const doctors = useMemo(() => {
     if (!doctorData) return [];
@@ -70,7 +92,7 @@ export function AppointmentsListPage() {
   const { data: appointmentData, isLoading, refetch } = useAppointments({
     page,
     limit,
-    departmentId: departmentId || undefined,
+    departmentId: effectiveDepartmentId,
     doctorId: isDoctor ? undefined : doctorId || undefined,
     date: date || undefined,
     status: (status as AppointmentStatus) || undefined,
@@ -199,7 +221,34 @@ export function AppointmentsListPage() {
       {/* Filter Bar */}
       <Card>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', alignItems: 'flex-end' }}>
-          {!isDoctor && (
+          {isReceptionist ? (
+            <div style={{ flex: '1 1 200px' }}>
+              <label
+                style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#495057', marginBottom: '4px' }}
+              >
+                Department
+              </label>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  padding: '6px 10px',
+                  background: '#f8f9fa',
+                  border: '1px solid #ced4da',
+                  borderRadius: '6px',
+                  fontSize: '0.875rem',
+                  fontWeight: 600,
+                  color: '#212529',
+                }}
+              >
+                <span>
+                  {departments.find((d) => d.id === receptionistDeptId)?.name || 'Your Department'}
+                </span>
+                <Badge variant="neutral">Your Department</Badge>
+              </div>
+            </div>
+          ) : isSuperAdmin ? (
             <div style={{ flex: '1 1 200px' }}>
               <label
                 htmlFor="filterDept"
@@ -233,7 +282,7 @@ export function AppointmentsListPage() {
                 ))}
               </select>
             </div>
-          )}
+          ) : null}
 
           {!isDoctor && (
             <div style={{ flex: '1 1 200px' }}>
