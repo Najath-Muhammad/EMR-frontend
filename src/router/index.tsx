@@ -9,6 +9,10 @@ import { HealthPage } from '../pages/HealthPage';
 import { SuperAdminDashboard } from '../pages/dashboards/SuperAdminDashboard';
 import { ReceptionistDashboard } from '../pages/dashboards/ReceptionistDashboard';
 import { DoctorDashboard } from '../pages/dashboards/DoctorDashboard';
+import { DepartmentsPage } from '../pages/admin/DepartmentsPage';
+import { DoctorsPage } from '../pages/admin/DoctorsPage';
+import { ReceptionistsPage } from '../pages/admin/ReceptionistsPage';
+import { ActivateAccountPage } from '../pages/auth/ActivateAccountPage';
 import { APP_ROUTES } from '../constants/routes';
 import { ROLES } from '../types/auth.types';
 
@@ -17,6 +21,12 @@ export const router = createBrowserRouter([
   {
     path: APP_ROUTES.LOGIN,
     element: <LoginPage />,
+  },
+
+  // Public staff account activation
+  {
+    path: APP_ROUTES.ACTIVATE_ACCOUNT,
+    element: <ActivateAccountPage />,
   },
 
   // Protected application shell
@@ -36,9 +46,9 @@ export const router = createBrowserRouter([
             element: <ProtectedRoute allowedRoles={[ROLES.SUPER_ADMIN]} />,
             children: [
               { path: 'admin/dashboard', element: <SuperAdminDashboard /> },
-              { path: 'admin/departments', element: <SuperAdminDashboard /> },
-              { path: 'admin/doctors', element: <SuperAdminDashboard /> },
-              { path: 'admin/receptionists', element: <SuperAdminDashboard /> },
+              { path: 'admin/departments', element: <DepartmentsPage /> },
+              { path: 'admin/doctors', element: <DoctorsPage /> },
+              { path: 'admin/receptionists', element: <ReceptionistsPage /> },
               { path: 'admin/schedules', element: <SuperAdminDashboard /> },
               { path: 'admin/appointments', element: <SuperAdminDashboard /> },
             ],

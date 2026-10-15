@@ -15,5 +15,6 @@ export const APP_ROUTES = {
   DOCTOR_SCHEDULE: '/doctor/schedule',
   DOCTOR_APPOINTMENTS: '/doctor/appointments',
   DOCTOR_PATIENTS: '/doctor/patients',
+  ACTIVATE_ACCOUNT: '/activate-account',
   NOT_FOUND: '*',
 } as const;
