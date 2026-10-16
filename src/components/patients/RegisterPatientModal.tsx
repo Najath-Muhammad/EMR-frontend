@@ -160,9 +160,11 @@ export function RegisterPatientModal({
 
       // 2. No duplicates found -> create immediately
       handleExecuteRegistration(values);
-    } catch {
-      // If duplicate check endpoint fails for any reason, proceed with direct creation attempt
-      handleExecuteRegistration(values);
+    } catch (err: unknown) {
+      const apiErr = err as { response?: { data?: { message?: string } } };
+      setErrorMessage(
+        apiErr.response?.data?.message ?? 'Unable to complete duplicate pre-screening. Please try again.',
+      );
     }
   };
 
