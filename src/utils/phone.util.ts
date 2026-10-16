@@ -1,6 +1,4 @@
-/**
- * Utility functions for formatting telephone numbers in the UI.
- */
+
 export function formatPhoneDisplay(phone: string): string {
   if (!phone) return '';
   const digits = phone.replace(/\D/g, '').replace(/^0+/, '');

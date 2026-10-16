@@ -21,7 +21,6 @@ export function PatientsPage() {
   const [sortBy, setSortBy] = useState('createdAt');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
-  // Modals
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [successNotice, setSuccessNotice] = useState<string | null>(null);
@@ -230,7 +229,7 @@ export function PatientsPage() {
         emptyMessage="No patient records found. Use the button above to register a new patient."
       />
 
-      {/* Register Patient Modal */}
+      {}
       <RegisterPatientModal
         isOpen={isRegisterOpen}
         onClose={() => setIsRegisterOpen(false)}
@@ -244,7 +243,7 @@ export function PatientsPage() {
         }}
       />
 
-      {/* Patient Detail Profile Modal */}
+      {}
       <PatientDetailModal
         patient={selectedPatient}
         isOpen={Boolean(selectedPatient)}

@@ -105,7 +105,7 @@ export function PossibleDuplicatesModal({
                 )}
               </div>
 
-              {/* Match Reason Pills */}
+              {}
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginTop: '2px' }}>
                 {item.matchReasons.map((reason, rIdx) => (
                   <span

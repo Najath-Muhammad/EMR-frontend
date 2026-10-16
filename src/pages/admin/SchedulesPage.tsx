@@ -79,13 +79,11 @@ export function SchedulesPage() {
   const [isDirty, setIsDirty] = useState<boolean>(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [activeDayOfWeek, setActiveDayOfWeek] = useState<number>(1); // Default Monday
+  const [activeDayOfWeek, setActiveDayOfWeek] = useState<number>(1);
 
-  // Conflict modal state
   const [conflictModalOpen, setConflictModalOpen] = useState<boolean>(false);
   const [conflictMessage, setConflictMessage] = useState<string>('');
 
-  // Queries & Mutations
   const { data: doctorsData, isLoading: isLoadingDoctors } = useDoctors();
   const doctorsList = useMemo(() => {
     if (!doctorsData) return [];
@@ -112,7 +110,6 @@ export function SchedulesPage() {
   const saveMutation = useSaveDoctorSchedule();
   const toggleStatusMutation = useToggleDoctorScheduleStatus();
 
-  // Load existing schedule or set default template
   useEffect(() => {
     if (!effectiveDoctorId) {
       setDraftSchedule(DEFAULT_SCHEDULE_INPUT);
@@ -127,7 +124,7 @@ export function SchedulesPage() {
       });
       setIsDirty(false);
     } else if (isScheduleError) {
-      // 404 means no schedule configured yet - reset to default
+
       setDraftSchedule(DEFAULT_SCHEDULE_INPUT);
       setIsDirty(false);
     }
@@ -226,7 +223,7 @@ export function SchedulesPage() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '1400px', margin: '0 auto' }}>
-      {/* Top Banner / Breadcrumb */}
+      {}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
           <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#0a0a0a', margin: 0 }}>
@@ -326,7 +323,7 @@ export function SchedulesPage() {
         </div>
       )}
 
-      {/* Doctor Selector Header Card with Precision Filter Bar */}
+      {}
       <Card>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <DoctorScheduleFilterBar

@@ -81,7 +81,7 @@ export const BookingConfirmationModal: React.FC<BookingConfirmationModalProps> =
             </p>
           </div>
 
-          {/* Doctor & Dept */}
+          {}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
             <div style={{ background: '#f8f9fa', padding: '0.75rem', borderRadius: '6px', border: '1px solid #e9ecef' }}>
               <span style={{ fontSize: '0.75rem', color: '#6c757d' }}>Department</span>
@@ -102,7 +102,7 @@ export const BookingConfirmationModal: React.FC<BookingConfirmationModalProps> =
             </div>
           </div>
 
-          {/* Date & Time Slot */}
+          {}
           <div style={{ background: '#f8f9fa', padding: '0.75rem', borderRadius: '6px', border: '1px solid #e9ecef' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <div>
@@ -120,7 +120,7 @@ export const BookingConfirmationModal: React.FC<BookingConfirmationModalProps> =
             </div>
           </div>
 
-          {/* Purpose & Notes */}
+          {}
           <div>
             <span style={{ fontSize: '0.75rem', color: '#6c757d' }}>Purpose</span>
             <p style={{ fontSize: '0.875rem', color: '#0a0a0a', marginTop: '2px', fontWeight: 500 }}>

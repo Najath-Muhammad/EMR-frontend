@@ -45,7 +45,6 @@ export function AppointmentsListPage() {
     return null;
   }, [user]);
 
-  // Filter & Query States
   const [search, setSearch] = useState('');
   const [departmentId, setDepartmentId] = useState(receptionistDeptId || '');
   const [doctorId, setDoctorId] = useState('');
@@ -92,14 +91,12 @@ export function AppointmentsListPage() {
       sortOrder !== 'asc',
   );
 
-  // Lock department for receptionist
   useEffect(() => {
     if (isReceptionist && receptionistDeptId && departmentId !== receptionistDeptId) {
       setDepartmentId(receptionistDeptId);
     }
   }, [isReceptionist, receptionistDeptId, departmentId]);
 
-  // Modals
   const [appointmentToCancel, setAppointmentToCancel] = useState<Appointment | null>(null);
   const [selectedDetailAppt, setSelectedDetailAppt] = useState<Appointment | null>(null);
   const [apptToReschedule, setApptToReschedule] = useState<Appointment | null>(null);
@@ -108,7 +105,6 @@ export function AppointmentsListPage() {
 
   const [notification, setNotification] = useState<string | null>(null);
 
-  // Queries
   const { data: deptData } = useActiveDepartments();
   const departments = useMemo(() => {
     if (!deptData) return [];
@@ -159,7 +155,6 @@ export function AppointmentsListPage() {
   const total = appointmentData?.meta?.total ?? appointmentsList.length;
   const totalPages = appointmentData?.meta?.totalPages ?? (Math.ceil(total / limit) || 1);
 
-  // Mutations
   const cancelMutation = useCancelAppointment();
   const markArrivedMutation = useMarkAppointmentArrived();
 
@@ -212,7 +207,7 @@ export function AppointmentsListPage() {
 
   return (
     <div style={{ maxWidth: '1100px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      {/* Header */}
+      {}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
@@ -308,7 +303,7 @@ export function AppointmentsListPage() {
       {/* Filter Bar */}
       <Card>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          {/* Search Bar Row */}
+          {}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap' }}>
             <SearchInput
               value={search}
@@ -331,7 +326,7 @@ export function AppointmentsListPage() {
             )}
           </div>
 
-          {/* Filter Controls Row */}
+          {}
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', alignItems: 'flex-end' }}>
             {isReceptionist ? (
               <div style={{ flex: '1 1 180px' }}>
@@ -702,7 +697,7 @@ export function AppointmentsListPage() {
               </tbody>
             </table>
 
-            {/* Pagination Controls */}
+            {}
             <div
               style={{
                 display: 'flex',
@@ -773,7 +768,7 @@ export function AppointmentsListPage() {
         )}
       </Card>
 
-      {/* Appointment Detail Modal */}
+      {}
       <AppointmentDetailModal
         isOpen={Boolean(selectedDetailAppt)}
         appointment={selectedDetailAppt}
@@ -801,7 +796,7 @@ export function AppointmentsListPage() {
         }}
       />
 
-      {/* Reschedule Modal */}
+      {}
       <RescheduleModal
         isOpen={Boolean(apptToReschedule)}
         appointment={apptToReschedule}
@@ -812,7 +807,7 @@ export function AppointmentsListPage() {
         }}
       />
 
-      {/* Edit Purpose / Notes Modal */}
+      {}
       <EditAppointmentModal
         isOpen={Boolean(apptToEdit)}
         appointment={apptToEdit}
@@ -823,7 +818,7 @@ export function AppointmentsListPage() {
         }}
       />
 
-      {/* Consultation Notes Modal */}
+      {}
       <ConsultationNotesModal
         isOpen={Boolean(apptForConsultation)}
         appointment={apptForConsultation}
@@ -834,7 +829,7 @@ export function AppointmentsListPage() {
         }}
       />
 
-      {/* Cancel Appointment Modal */}
+      {}
       <CancelAppointmentModal
         isOpen={Boolean(appointmentToCancel)}
         appointment={appointmentToCancel}

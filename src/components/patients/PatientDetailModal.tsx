@@ -75,7 +75,7 @@ export function PatientDetailModal({
           </div>
         </div>
 
-        {/* Contact and Demographics */}
+        {}
         <dl style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.875rem 1rem', margin: 0 }}>
           <div>
             <dt style={{ fontSize: '0.75rem', color: '#adb5bd', marginBottom: '2px' }}>Mobile Phone</dt>
@@ -115,7 +115,7 @@ export function PatientDetailModal({
           )}
         </dl>
 
-        {/* Emergency Contact Card */}
+        {}
         {patient.emergencyContact && (
           <div
             style={{

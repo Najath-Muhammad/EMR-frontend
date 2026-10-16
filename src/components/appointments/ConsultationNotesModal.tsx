@@ -97,7 +97,7 @@ export function ConsultationNotesModal({
           overflow: 'hidden',
         }}
       >
-        {/* Header */}
+        {}
         <div
           style={{
             padding: '1.25rem 1.5rem',

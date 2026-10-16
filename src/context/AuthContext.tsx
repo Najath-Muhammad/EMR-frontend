@@ -8,7 +8,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  // Restore session via HttpOnly cookie refresh on initial mount
   useEffect(() => {
     let isMounted = true;
 
@@ -33,7 +32,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     void initSession();
 
-    // Listen for session expiration events from Axios interceptor
     const handleSessionExpired = (): void => {
       tokenManager.clearToken();
       setUser(null);
@@ -57,7 +55,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       await logoutApi();
     } catch {
-      // Proceed with client-side cleanup regardless
+
     } finally {
       tokenManager.clearToken();
       setUser(null);

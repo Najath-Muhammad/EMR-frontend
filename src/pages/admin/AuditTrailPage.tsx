@@ -78,7 +78,7 @@ export function AuditTrailPage() {
 
   return (
     <div style={{ maxWidth: '1280px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      {/* Header */}
+      {}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
           <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#0a0a0a', margin: 0, letterSpacing: '-0.02em' }}>
@@ -90,11 +90,11 @@ export function AuditTrailPage() {
         </div>
       </div>
 
-      {/* Filter Toolbar */}
+      {}
       <Card>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.75rem' }}>
-            {/* Search Input */}
+            {}
             <div style={{ gridColumn: 'span 2' }}>
               <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#495057', marginBottom: '4px' }}>
                 Search Action, Actor, or Entity ID
@@ -185,7 +185,7 @@ export function AuditTrailPage() {
               </select>
             </div>
 
-            {/* Status Filter */}
+            {}
             <div>
               <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#495057', marginBottom: '4px' }}>
                 Status
@@ -212,7 +212,7 @@ export function AuditTrailPage() {
               </select>
             </div>
 
-            {/* Start Date */}
+            {}
             <div>
               <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#495057', marginBottom: '4px' }}>
                 From Date
@@ -269,7 +269,7 @@ export function AuditTrailPage() {
         </div>
       </Card>
 
-      {/* Audit Log Table */}
+      {}
       <Card style={{ padding: 0, overflow: 'hidden' }}>
         <div style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.875rem' }}>

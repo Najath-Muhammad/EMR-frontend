@@ -29,7 +29,6 @@ function processQueue(error: unknown, token: string | null = null): void {
   failedQueue = [];
 }
 
-// Request interceptor: attach in-memory access token
 axiosInstance.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const token = tokenManager.getToken();
@@ -41,7 +40,6 @@ axiosInstance.interceptors.request.use(
   (error: AxiosError) => Promise.reject(error),
 );
 
-// Response interceptor: handle 401 with silent token refresh
 axiosInstance.interceptors.response.use(
   (response: AxiosResponse) => response,
   async (error: AxiosError) => {
@@ -57,7 +55,6 @@ axiosInstance.interceptors.response.use(
       requestUrl.includes('/auth/refresh') ||
       requestUrl.includes('/auth/logout');
 
-    // Never attempt refresh loop on auth endpoints
     if (error.response?.status === 401 && !originalRequest._retry && !isAuthRoute) {
       if (isRefreshing) {
         return new Promise((resolve, reject) => {

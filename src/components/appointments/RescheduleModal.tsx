@@ -116,7 +116,7 @@ export function RescheduleModal({
           overflow: 'hidden',
         }}
       >
-        {/* Header */}
+        {}
         <div
           style={{
             padding: '1.25rem 1.5rem',
@@ -156,7 +156,7 @@ export function RescheduleModal({
           <strong>Current Slot:</strong> {appointment.date} at {appointment.startTime} – {appointment.endTime}
         </div>
 
-        {/* Content */}
+        {}
         <form onSubmit={handleSubmit} style={{ overflowY: 'auto', flex: 1, padding: '1.25rem 1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           {errorMessage && (
             <div style={{ padding: '0.75rem 1rem', background: '#fff5f5', border: '1px solid #f5c6cb', borderRadius: '6px', color: '#842029', fontSize: '0.8125rem' }}>

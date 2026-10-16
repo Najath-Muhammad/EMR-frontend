@@ -1,17 +1,17 @@
 export interface Session {
-  startTime: string; // HH:mm
-  endTime: string;   // HH:mm
+  startTime: string;
+  endTime: string;
   label?: string;
 }
 
 export interface Break {
-  startTime: string; // HH:mm
-  endTime: string;   // HH:mm
+  startTime: string;
+  endTime: string;
   label?: string;
 }
 
 export interface DaySchedule {
-  dayOfWeek: number; // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+  dayOfWeek: number;
   dayName: 'SUNDAY' | 'MONDAY' | 'TUESDAY' | 'WEDNESDAY' | 'THURSDAY' | 'FRIDAY' | 'SATURDAY';
   isEnabled: boolean;
   sessions: Session[];

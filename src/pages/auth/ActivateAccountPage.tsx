@@ -91,7 +91,7 @@ export function ActivateAccountPage() {
           padding: '2rem',
         }}
       >
-        {/* Brand / Header */}
+        {}
         <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
           <h1 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#0a0a0a', margin: 0 }}>
             EMR System

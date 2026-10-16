@@ -21,7 +21,6 @@ export function DoctorAppointmentsPage() {
   const [apptForConsultation, setApptForConsultation] = useState<Appointment | null>(null);
   const [notification, setNotification] = useState<string | null>(null);
 
-  // Doctor only gets their own appointments from the backend (service enforces filter.doctor = requestingUser.userId)
   const { data: appointmentData, isLoading, refetch } = useAppointments({
     date: dateFilter || undefined,
     status: (statusFilter as AppointmentStatus) || undefined,
@@ -40,7 +39,6 @@ export function DoctorAppointmentsPage() {
     return [];
   }, [appointmentData]);
 
-  // Priority queue: Patients marked as ARRIVED (Waiting in Clinic)
   const arrivedQueue = useMemo(() => {
     return appointments.filter((a) => a.status === 'ARRIVED');
   }, [appointments]);
@@ -149,7 +147,7 @@ export function DoctorAppointmentsPage() {
         </div>
       )}
 
-      {/* KPI Stats Cards */}
+      {}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
         <Card>
           <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#6c757d', textTransform: 'uppercase' }}>
@@ -314,7 +312,7 @@ export function DoctorAppointmentsPage() {
         </div>
       </Card>
 
-      {/* Appointments Table */}
+      {}
       <Card>
         <h2 style={{ fontSize: '1.0625rem', fontWeight: 600, color: '#0a0a0a', marginBottom: '1rem' }}>
           All Schedule & Consultations

@@ -44,14 +44,12 @@ export function DepartmentsPage() {
   const [searchInput, setSearchInput] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
 
-  // Modals state
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [editingDepartment, setEditingDepartment] = useState<Department | null>(null);
   const [statusConfirmTarget, setStatusConfirmTarget] = useState<Department | null>(null);
   const [statusErrorModal, setStatusErrorModal] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Queries & Mutations
   const isActiveParam = statusFilter === 'all' ? undefined : statusFilter === 'active';
   const { data, isLoading } = useDepartments({
     page,
@@ -66,13 +64,11 @@ export function DepartmentsPage() {
   const updateMutation = useUpdateDepartment();
   const toggleStatusMutation = useToggleDepartmentStatus();
 
-  // React Hook Form for Create
   const createForm = useForm<CreateDepartmentFormValues>({
     resolver: zodResolver(createDepartmentSchema),
     defaultValues: { name: '', code: '', description: '' },
   });
 
-  // React Hook Form for Update
   const updateForm = useForm<UpdateDepartmentFormValues>({
     resolver: zodResolver(updateDepartmentSchema),
     defaultValues: { name: '', description: '' },
@@ -274,7 +270,7 @@ export function DepartmentsPage() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-      {/* Page Header */}
+      {}
       <div
         style={{
           display: 'flex',
@@ -377,7 +373,7 @@ export function DepartmentsPage() {
         }
       />
 
-      {/* Create Department Modal */}
+      {}
       <Modal
         isOpen={isCreateOpen}
         onClose={() => setIsCreateOpen(false)}
@@ -441,7 +437,7 @@ export function DepartmentsPage() {
         </form>
       </Modal>
 
-      {/* Edit Department Modal */}
+      {}
       <Modal
         isOpen={!!editingDepartment}
         onClose={() => setEditingDepartment(null)}
@@ -494,7 +490,7 @@ export function DepartmentsPage() {
         </form>
       </Modal>
 
-      {/* Status Toggle Confirmation */}
+      {}
       <ConfirmDialog
         isOpen={!!statusConfirmTarget}
         onClose={() => setStatusConfirmTarget(null)}
@@ -510,7 +506,7 @@ export function DepartmentsPage() {
         isLoading={toggleStatusMutation.isPending}
       />
 
-      {/* Action Error Modal */}
+      {}
       <Modal
         isOpen={!!statusErrorModal}
         onClose={() => setStatusErrorModal(null)}

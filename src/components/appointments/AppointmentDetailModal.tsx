@@ -83,7 +83,7 @@ export function AppointmentDetailModal({
           overflow: 'hidden',
         }}
       >
-        {/* Header */}
+        {}
         <div
           style={{
             padding: '1.25rem 1.5rem',
@@ -119,9 +119,9 @@ export function AppointmentDetailModal({
           </div>
         </div>
 
-        {/* Content body */}
+        {}
         <div style={{ padding: '1.5rem', overflowY: 'auto', flex: 1, display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-          {/* Patient & Doctor Grid */}
+          {}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
             <div style={{ padding: '1rem', background: '#f8f9fa', borderRadius: '6px', border: '1px solid #dee2e6' }}>
               <div style={{ fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', color: '#6c757d', marginBottom: '4px' }}>
@@ -222,7 +222,7 @@ export function AppointmentDetailModal({
             </div>
           )}
 
-          {/* Audit trail */}
+          {}
           <div style={{ padding: '0.75rem 1rem', background: '#ffffff', borderRadius: '6px', border: '1px solid #f1f3f5', fontSize: '0.75rem', color: '#6c757d' }}>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.5rem' }}>
               <div>
@@ -251,7 +251,7 @@ export function AppointmentDetailModal({
             </div>
           </div>
 
-          {/* Reschedule History if present */}
+          {}
           {appointment.rescheduleHistory && appointment.rescheduleHistory.length > 0 && (
             <div style={{ padding: '1rem', background: '#fff9db', borderRadius: '6px', border: '1px solid #ffe066' }}>
               <span style={{ display: 'block', fontSize: '0.8125rem', color: '#856404', fontWeight: 600, marginBottom: '6px' }}>
@@ -271,7 +271,7 @@ export function AppointmentDetailModal({
           )}
         </div>
 
-        {/* Footer Actions */}
+        {}
         <div
           style={{
             padding: '1rem 1.5rem',
@@ -283,7 +283,7 @@ export function AppointmentDetailModal({
           }}
         >
           <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-            {/* Mark as Arrived action: for Receptionist / Super Admin when status is SCHEDULED or CONFIRMED */}
+            {}
             {(isReceptionist || isSuperAdmin) &&
               (appointment.status === 'SCHEDULED' || appointment.status === 'CONFIRMED') &&
               onMarkArrived && (

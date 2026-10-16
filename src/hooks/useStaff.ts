@@ -36,7 +36,7 @@ export function useCreateStaff() {
     mutationFn: (input: CreateStaffInput) => createStaff(input),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: STAFF_QUERY_KEYS.all });
-      // Invalidate departments as doctorCount or hasActiveReceptionist may have changed
+
       void queryClient.invalidateQueries({ queryKey: DEPARTMENT_QUERY_KEYS.all });
     },
   });

@@ -10,16 +10,16 @@ import { Button } from '../ui/Button';
 interface SlotPreviewGridProps {
   schedule: SaveScheduleInput;
   doctorName?: string;
-  activeDayOfWeek?: number; // 0 = Sun, 1 = Mon, ..., 6 = Sat
+  activeDayOfWeek?: number;
 }
 
 const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 function getNextDateForDayOfWeek(targetDayOfWeek: number): string {
   const today = new Date();
-  const currentDay = today.getDay(); // 0 = Sun, 1 = Mon, ..., 6 = Sat
+  const currentDay = today.getDay();
   let daysUntil = (targetDayOfWeek - currentDay + 7) % 7;
-  // If target day is today, push to next week (+7 days) to ensure full working day without past-time cutoffs
+
   if (daysUntil === 0) {
     daysUntil = 7;
   }
@@ -31,7 +31,7 @@ export function SlotPreviewGrid({
   doctorName,
   activeDayOfWeek = 1,
 }: SlotPreviewGridProps) {
-  // Sync preview date to the day of week currently selected in the schedule editor
+
   const [selectedDate, setSelectedDate] = useState<string>(() =>
     getNextDateForDayOfWeek(activeDayOfWeek),
   );
@@ -40,7 +40,6 @@ export function SlotPreviewGrid({
 
   const previewMutation = usePreviewSlots();
 
-  // Whenever the active day tab in the editor changes (e.g. from Friday to Monday), update preview date to match
   useEffect(() => {
     setSelectedDate(getNextDateForDayOfWeek(activeDayOfWeek));
   }, [activeDayOfWeek]);
@@ -68,11 +67,10 @@ export function SlotPreviewGrid({
         },
       );
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
     [schedule, selectedDate],
   );
 
-  // Debounced auto-refresh when schedule or date changes
   useEffect(() => {
     const timer = setTimeout(() => {
       handleFetchPreview(selectedDate);
@@ -145,7 +143,7 @@ export function SlotPreviewGrid({
         gap: '1rem',
       }}
     >
-      {/* Header and Date Selector */}
+      {}
       <div
         style={{
           display: 'flex',
@@ -289,7 +287,7 @@ export function SlotPreviewGrid({
         </div>
       )}
 
-      {/* Error State */}
+      {}
       {errorMessage && !previewMutation.isPending && (
         <div
           style={{
@@ -305,7 +303,7 @@ export function SlotPreviewGrid({
         </div>
       )}
 
-      {/* Empty State */}
+      {}
       {!previewMutation.isPending && !errorMessage && summary && summary.slots.length === 0 && (
         <div
           style={{
@@ -327,7 +325,7 @@ export function SlotPreviewGrid({
         </div>
       )}
 
-      {/* Slots Grid */}
+      {}
       {!previewMutation.isPending && summary && summary.slots.length > 0 && (
         <div
           style={{

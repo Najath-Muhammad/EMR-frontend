@@ -26,7 +26,7 @@ export async function fetchActiveDepartments(): Promise<Department[]> {
     const fallback = response.data.data as unknown as { items?: Department[] };
     return Array.isArray(fallback?.items) ? fallback.items : [];
   } catch {
-    // Fallback to query with isActive: true
+
     const fallbackResponse = await axiosInstance.get<ApiResponse<Department[]>>('/departments', {
       params: { isActive: true, limit: 100 },
     });

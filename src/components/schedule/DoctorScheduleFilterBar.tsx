@@ -33,7 +33,6 @@ export function DoctorScheduleFilterBar({
   const [sortBy, setSortBy] = useState<DoctorSortOption>('name-asc');
   const [statusFilter, setStatusFilter] = useState<ScheduleStatusFilter>('ALL');
 
-  // Confirmation modal when attempting to switch doctors with unsaved schedule changes
   const [pendingDoctorId, setPendingDoctorId] = useState<string | null>(null);
   const [showDirtyModal, setShowDirtyModal] = useState(false);
 
@@ -47,7 +46,6 @@ export function DoctorScheduleFilterBar({
     return [];
   }, [deptData]);
 
-  // Compute counts for quick status filters
   const counts = useMemo(() => {
     let withSched = 0;
     let needsSched = 0;
@@ -58,16 +56,13 @@ export function DoctorScheduleFilterBar({
     return { all: doctors.length, withSched, needsSched };
   }, [doctors]);
 
-  // Filter & Sort physicians
   const filteredAndSortedDoctors = useMemo(() => {
     let list = [...doctors];
 
-    // 1. Department filter
     if (departmentFilter) {
       list = list.filter((d) => d.department?.id === departmentFilter);
     }
 
-    // 2. Search query filter (name, email, specialization, department code/name)
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase().trim();
       list = list.filter(
@@ -80,14 +75,12 @@ export function DoctorScheduleFilterBar({
       );
     }
 
-    // 3. Status filter
     if (statusFilter === 'WITH_SCHEDULE') {
       list = list.filter((d) => d.hasSchedule);
     } else if (statusFilter === 'NO_SCHEDULE') {
       list = list.filter((d) => !d.hasSchedule);
     }
 
-    // 4. Sorting
     switch (sortBy) {
       case 'name-asc':
         list.sort((a, b) => a.name.localeCompare(b.name));
@@ -112,7 +105,6 @@ export function DoctorScheduleFilterBar({
     return list;
   }, [doctors, departmentFilter, searchQuery, statusFilter, sortBy]);
 
-  // Find index of active doctor in the filtered list
   const currentIndex = useMemo(() => {
     return filteredAndSortedDoctors.findIndex((d) => d.id === selectedDoctorId);
   }, [filteredAndSortedDoctors, selectedDoctorId]);
@@ -170,7 +162,7 @@ export function DoctorScheduleFilterBar({
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.875rem' }}>
-      {/* Top Filter Controls Bar */}
+      {}
       <div
         style={{
           display: 'grid',
@@ -183,7 +175,7 @@ export function DoctorScheduleFilterBar({
           border: '1px solid #e9ecef',
         }}
       >
-        {/* Department Filter */}
+        {}
         <div>
           <label
             htmlFor="filterDepartment"
@@ -367,7 +359,7 @@ export function DoctorScheduleFilterBar({
         </div>
       </div>
 
-      {/* Main Doctor Selection & Quick Stepper Row */}
+      {}
       <div
         style={{
           display: 'flex',
@@ -452,7 +444,7 @@ export function DoctorScheduleFilterBar({
           </Button>
         </div>
 
-        {/* Counter Badge */}
+        {}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <span style={{ fontSize: '0.8125rem', color: '#6c757d' }}>
             Showing <strong>{filteredAndSortedDoctors.length}</strong> of {doctors.length} doctors

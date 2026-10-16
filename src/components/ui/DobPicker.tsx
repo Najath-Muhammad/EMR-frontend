@@ -132,7 +132,6 @@ export const DobPicker = forwardRef<HTMLInputElement, DobPickerProps>(
 
     const ageSummary = calculateAgeSummary(selectedDate);
 
-    // Generate years from currentYear down to 1900
     const years: number[] = [];
     for (let y = currentYear; y >= 1900; y--) {
       years.push(y);
@@ -140,7 +139,7 @@ export const DobPicker = forwardRef<HTMLInputElement, DobPickerProps>(
 
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '1rem' }}>
-        {/* Label and Live Age Display */}
+        {}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <label
             htmlFor={fieldId}
@@ -155,7 +154,7 @@ export const DobPicker = forwardRef<HTMLInputElement, DobPickerProps>(
           )}
         </div>
 
-        {/* Primary Labellable Date Input */}
+        {}
         <div style={{ position: 'relative' }}>
           <input
             ref={ref}
@@ -242,7 +241,7 @@ export const DobPicker = forwardRef<HTMLInputElement, DobPickerProps>(
           </select>
         </div>
 
-        {/* Error message or helper text */}
+        {}
         {error ? (
           <span style={{ fontSize: '0.75rem', color: '#dc3545', fontWeight: 500 }}>{error}</span>
         ) : helperText ? (

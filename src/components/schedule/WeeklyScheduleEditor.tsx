@@ -28,7 +28,7 @@ export function WeeklyScheduleEditor({
   selectedDayOfWeek: propSelectedDayOfWeek,
   onSelectDayOfWeek,
 }: WeeklyScheduleEditorProps) {
-  const [internalDayOfWeek, setInternalDayOfWeek] = useState<number>(1); // Default Monday
+  const [internalDayOfWeek, setInternalDayOfWeek] = useState<number>(1);
   const selectedDayOfWeek = propSelectedDayOfWeek ?? internalDayOfWeek;
 
   const handleSelectDay = (day: number) => {
@@ -70,7 +70,7 @@ export function WeeklyScheduleEditor({
       return {
         ...prev,
         isEnabled: willEnable,
-        // If enabling for the first time with 0 sessions, give a sensible default session
+
         sessions:
           willEnable && prev.sessions.length === 0
             ? [{ startTime: '09:00', endTime: '17:00', label: 'Regular Shift' }]
@@ -158,7 +158,7 @@ export function WeeklyScheduleEditor({
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-      {/* Top Global Controls: Slot Duration */}
+      {}
       <div
         style={{
           background: '#f8f9fa',
@@ -255,7 +255,7 @@ export function WeeklyScheduleEditor({
           })}
         </div>
 
-        {/* Copy Monday Template shortcut */}
+        {}
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <Button
             type="button"
@@ -338,7 +338,7 @@ export function WeeklyScheduleEditor({
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-            {/* Working Sessions Section */}
+            {}
             <div>
               <div
                 style={{

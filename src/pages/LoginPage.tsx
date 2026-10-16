@@ -42,7 +42,6 @@ export function LoginPage() {
     },
   });
 
-  // Helper to resolve role-specific destination
   const getDestinationForRole = (role: Role): string => {
     switch (role) {
       case ROLES.SUPER_ADMIN:
@@ -56,7 +55,6 @@ export function LoginPage() {
     }
   };
 
-  // Redirect if already authenticated
   if (isAuthenticated && user) {
     const destination = getDestinationForRole(user.role);
     return <Navigate to={destination} replace />;

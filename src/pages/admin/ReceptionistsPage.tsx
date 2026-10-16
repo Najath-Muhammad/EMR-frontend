@@ -47,7 +47,6 @@ export function ReceptionistsPage() {
   const [departmentFilter, setDepartmentFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
 
-  // Modal states
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [editingReceptionist, setEditingReceptionist] = useState<StaffMember | null>(null);
   const [statusConfirmTarget, setStatusConfirmTarget] = useState<StaffMember | null>(null);
@@ -55,7 +54,6 @@ export function ReceptionistsPage() {
   const [activationResult, setActivationResult] = useState<StaffCreationResult | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Queries
   const { data: departmentsData } = useActiveDepartments();
   const activeDepartments = departmentsData ?? [];
 
@@ -76,7 +74,6 @@ export function ReceptionistsPage() {
   const toggleStatusMutation = useToggleStaffStatus();
   const resendActivationMutation = useResendActivation();
 
-  // Forms
   const createForm = useForm<CreateReceptionistFormValues>({
     resolver: zodResolver(createReceptionistSchema),
     defaultValues: { name: '', email: '', department: '', phone: '' },
@@ -324,7 +321,7 @@ export function ReceptionistsPage() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-      {/* Notice Banner */}
+      {}
       <div
         style={{
           background: '#f8f9fa',
@@ -340,7 +337,7 @@ export function ReceptionistsPage() {
         </p>
       </div>
 
-      {/* Page Header */}
+      {}
       <div
         style={{
           display: 'flex',
@@ -465,7 +462,7 @@ export function ReceptionistsPage() {
         }
       />
 
-      {/* Add Receptionist Modal */}
+      {}
       <Modal
         isOpen={isCreateOpen}
         onClose={() => setIsCreateOpen(false)}
@@ -557,7 +554,7 @@ export function ReceptionistsPage() {
         </form>
       </Modal>
 
-      {/* Edit Receptionist Modal */}
+      {}
       <Modal
         isOpen={!!editingReceptionist}
         onClose={() => setEditingReceptionist(null)}
@@ -616,7 +613,7 @@ export function ReceptionistsPage() {
         </form>
       </Modal>
 
-      {/* Status Confirm Dialog */}
+      {}
       <ConfirmDialog
         isOpen={!!statusConfirmTarget}
         onClose={() => setStatusConfirmTarget(null)}
@@ -632,13 +629,13 @@ export function ReceptionistsPage() {
         isLoading={toggleStatusMutation.isPending}
       />
 
-      {/* Activation Link Modal */}
+      {}
       <ActivationLinkModal
         creationResult={activationResult}
         onClose={() => setActivationResult(null)}
       />
 
-      {/* Action Error Modal */}
+      {}
       <Modal
         isOpen={!!statusErrorModal}
         onClose={() => setStatusErrorModal(null)}

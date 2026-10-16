@@ -23,19 +23,17 @@ import { APP_ROUTES } from '../constants/routes';
 import { ROLES } from '../types/auth.types';
 
 export const router = createBrowserRouter([
-  // Public staff login
+
   {
     path: APP_ROUTES.LOGIN,
     element: <LoginPage />,
   },
 
-  // Public staff account activation
   {
     path: APP_ROUTES.ACTIVATE_ACCOUNT,
     element: <ActivateAccountPage />,
   },
 
-  // Protected application shell
   {
     path: APP_ROUTES.ROOT,
     element: <ProtectedRoute />,
@@ -47,7 +45,6 @@ export const router = createBrowserRouter([
           { path: 'health', element: <HealthPage /> },
           { path: 'unauthorized', element: <UnauthorizedPage /> },
 
-          // Super Admin exclusive routes
           {
             element: <ProtectedRoute allowedRoles={[ROLES.SUPER_ADMIN]} />,
             children: [
@@ -62,7 +59,6 @@ export const router = createBrowserRouter([
             ],
           },
 
-          // Receptionist exclusive routes
           {
             element: <ProtectedRoute allowedRoles={[ROLES.RECEPTIONIST]} />,
             children: [
@@ -73,7 +69,6 @@ export const router = createBrowserRouter([
             ],
           },
 
-          // Doctor exclusive routes
           {
             element: <ProtectedRoute allowedRoles={[ROLES.DOCTOR]} />,
             children: [
@@ -88,7 +83,6 @@ export const router = createBrowserRouter([
     ],
   },
 
-  // Fallback 404
   {
     path: APP_ROUTES.NOT_FOUND,
     element: <NotFoundPage />,

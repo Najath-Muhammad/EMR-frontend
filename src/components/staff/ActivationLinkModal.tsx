@@ -22,7 +22,7 @@ export function ActivationLinkModal({
       setCopied(true);
       setTimeout(() => setCopied(false), 3000);
     } catch {
-      // Fallback
+
       setCopied(false);
     }
   };

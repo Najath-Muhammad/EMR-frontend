@@ -74,7 +74,6 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const handleAuthChange = (token: string | null) => {
       const activeToken = token || localStorage.getItem('emr_token');
 
-      // Disconnect existing socket if no token
       if (!activeToken) {
         if (socketRef.current) {
           socketRef.current.disconnect();
@@ -85,7 +84,6 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         return;
       }
 
-      // If already connected with the same token, don't recreate
       if (socketRef.current?.connected) {
         return;
       }
@@ -107,7 +105,6 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         setIsConnected(true);
         setIsReconnecting(false);
 
-        // State reconciliation: Always invalidate and refetch on initial connect or reconnect
         void queryClient.invalidateQueries({ queryKey: ['appointments'] });
         void queryClient.invalidateQueries({ queryKey: ['slots'] });
       });
@@ -127,7 +124,6 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         void queryClient.invalidateQueries({ queryKey: ['slots'] });
       });
 
-      // 1. Appointment Created
       newSocket.on('appointment:created', (payload: RealtimeAppointmentPayload) => {
         void queryClient.invalidateQueries({ queryKey: ['appointments'] });
         void queryClient.invalidateQueries({ queryKey: ['slots'] });
@@ -146,7 +142,6 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         });
       });
 
-      // 2. Appointment Updated (Status change, reschedule, edit)
       newSocket.on('appointment:updated', (payload: RealtimeAppointmentPayload) => {
         void queryClient.invalidateQueries({ queryKey: ['appointments'] });
         void queryClient.invalidateQueries({ queryKey: ['slots'] });
@@ -169,7 +164,6 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         });
       });
 
-      // 3. Appointment Cancelled
       newSocket.on('appointment:cancelled', (payload: RealtimeAppointmentPayload) => {
         void queryClient.invalidateQueries({ queryKey: ['appointments'] });
         void queryClient.invalidateQueries({ queryKey: ['slots'] });
@@ -187,10 +181,8 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       });
     };
 
-    // Initial check
     handleAuthChange(tokenManager.getToken());
 
-    // Subscribe to token changes
     const unsubscribe = tokenManager.subscribe(handleAuthChange);
 
     return () => {
@@ -218,4 +210,3 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 };
 
 export { SocketContext };
-

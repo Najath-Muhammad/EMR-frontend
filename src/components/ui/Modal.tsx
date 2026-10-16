@@ -72,7 +72,7 @@ export function Modal({
           border: '1px solid #dee2e6',
         }}
       >
-        {/* Header */}
+        {}
         <div
           style={{
             padding: '1.25rem 1.5rem',

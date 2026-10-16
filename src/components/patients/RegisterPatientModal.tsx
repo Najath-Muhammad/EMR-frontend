@@ -144,7 +144,7 @@ export function RegisterPatientModal({
     setErrorMessage(null);
 
     try {
-      // 1. Pre-screening: search for potential matches (matching phone or matching name+DOB)
+
       const res = await checkDuplicatesMutation.mutateAsync({
         fullName: values.fullName,
         phone: values.phone,
@@ -158,7 +158,6 @@ export function RegisterPatientModal({
         return;
       }
 
-      // 2. No duplicates found -> create immediately
       handleExecuteRegistration(values);
     } catch (err: unknown) {
       const apiErr = err as { response?: { data?: { message?: string } } };
@@ -230,7 +229,7 @@ export function RegisterPatientModal({
             </div>
           )}
 
-          {/* Core Demographics Grid */}
+          {}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem' }}>
             <InputField
               label="Full Name"
@@ -315,7 +314,7 @@ export function RegisterPatientModal({
             {...register('address')}
           />
 
-          {/* Emergency Contact */}
+          {}
           <div
             style={{
               marginTop: '0.5rem',
@@ -352,7 +351,7 @@ export function RegisterPatientModal({
         </form>
       </Modal>
 
-      {/* Possible Duplicates Warning Modal */}
+      {}
       <PossibleDuplicatesModal
         isOpen={isDuplicateModalOpen}
         onClose={() => setIsDuplicateModalOpen(false)}

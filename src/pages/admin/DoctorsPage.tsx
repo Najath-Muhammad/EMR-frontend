@@ -49,7 +49,6 @@ export function DoctorsPage() {
   const [departmentFilter, setDepartmentFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
 
-  // Modal states
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [editingDoctor, setEditingDoctor] = useState<StaffMember | null>(null);
   const [statusConfirmTarget, setStatusConfirmTarget] = useState<StaffMember | null>(null);
@@ -57,7 +56,6 @@ export function DoctorsPage() {
   const [activationResult, setActivationResult] = useState<StaffCreationResult | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Queries
   const { data: departmentsData } = useActiveDepartments();
   const activeDepartments = departmentsData ?? [];
 
@@ -78,7 +76,6 @@ export function DoctorsPage() {
   const toggleStatusMutation = useToggleStaffStatus();
   const resendActivationMutation = useResendActivation();
 
-  // React Hook Form
   const createForm = useForm<CreateDoctorFormValues>({
     resolver: zodResolver(createDoctorSchema),
     defaultValues: { name: '', email: '', department: '', specialization: '', phone: '' },
@@ -452,7 +449,7 @@ export function DoctorsPage() {
         }
       />
 
-      {/* Add Doctor Modal */}
+      {}
       <Modal
         isOpen={isCreateOpen}
         onClose={() => setIsCreateOpen(false)}
@@ -531,7 +528,7 @@ export function DoctorsPage() {
         </form>
       </Modal>
 
-      {/* Edit Doctor Modal */}
+      {}
       <Modal
         isOpen={!!editingDoctor}
         onClose={() => setEditingDoctor(null)}
@@ -595,7 +592,7 @@ export function DoctorsPage() {
         </form>
       </Modal>
 
-      {/* Status Confirm Dialog */}
+      {}
       <ConfirmDialog
         isOpen={!!statusConfirmTarget}
         onClose={() => setStatusConfirmTarget(null)}
@@ -611,13 +608,13 @@ export function DoctorsPage() {
         isLoading={toggleStatusMutation.isPending}
       />
 
-      {/* Activation Link Modal (upon create or resend invitation) */}
+      {}
       <ActivationLinkModal
         creationResult={activationResult}
         onClose={() => setActivationResult(null)}
       />
 
-      {/* Action Error Modal */}
+      {}
       <Modal
         isOpen={!!statusErrorModal}
         onClose={() => setStatusErrorModal(null)}

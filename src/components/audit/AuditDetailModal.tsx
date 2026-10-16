@@ -47,7 +47,7 @@ export const AuditDetailModal: React.FC<AuditDetailModalProps> = ({ log, isOpen,
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
+        {}
         <div
           style={{
             padding: '1.25rem 1.5rem',
@@ -80,9 +80,9 @@ export const AuditDetailModal: React.FC<AuditDetailModalProps> = ({ log, isOpen,
           </button>
         </div>
 
-        {/* Content Body */}
+        {}
         <div style={{ padding: '1.5rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-          {/* Summary Grid */}
+          {}
           <div
             style={{
               display: 'grid',

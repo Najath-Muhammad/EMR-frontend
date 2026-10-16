@@ -7,9 +7,9 @@ export type SlotUnavailableReason =
   | 'OUTSIDE_SESSION';
 
 export interface TimeSlot {
-  startTime: string; // HH:mm
-  endTime: string;   // HH:mm
-  date: string;      // YYYY-MM-DD
+  startTime: string;
+  endTime: string;
+  date: string;
   isAvailable: boolean;
   reason?: SlotUnavailableReason;
   slotDuration: number;

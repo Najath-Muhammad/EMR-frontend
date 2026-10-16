@@ -28,7 +28,7 @@ export function useDoctorSchedule(doctorId?: string) {
     queryKey: SCHEDULE_QUERY_KEYS.schedule(doctorId ?? ''),
     queryFn: () => fetchDoctorSchedule(doctorId!),
     enabled: Boolean(doctorId),
-    retry: false, // Don't retry 404 when doctor doesn't have a schedule yet
+    retry: false,
   });
 }
 

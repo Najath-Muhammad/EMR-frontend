@@ -19,12 +19,10 @@ export function SearchInput({
 }: SearchInputProps) {
   const [localValue, setLocalValue] = useState(value);
 
-  // Sync internal state if parent value changes externally
   useEffect(() => {
     setLocalValue(value);
   }, [value]);
 
-  // Debounced notification to parent
   useEffect(() => {
     const timer = setTimeout(() => {
       if (localValue !== value) {

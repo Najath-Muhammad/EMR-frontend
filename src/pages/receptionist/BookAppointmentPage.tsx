@@ -37,38 +37,31 @@ export function BookAppointmentPage() {
     return null;
   }, [user]);
 
-  // Step 1: Patient Selection State
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [patientSearch, setPatientSearch] = useState('');
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
 
-  // Step 2: Department & Doctor State
   const [departmentId, setDepartmentId] = useState(receptionistDeptId || '');
   const [doctorId, setDoctorId] = useState('');
 
-  // Lock department for receptionist
   useEffect(() => {
     if (isReceptionist && receptionistDeptId && departmentId !== receptionistDeptId) {
       setDepartmentId(receptionistDeptId);
     }
   }, [isReceptionist, receptionistDeptId, departmentId]);
 
-  // Step 3: Date & Time Slot State
   const todayStr = useMemo(() => new Date().toISOString().split('T')[0] as string, []);
   const [date, setDate] = useState(todayStr);
   const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null);
 
-  // Step 4: Purpose & Notes State
   const [purpose, setPurpose] = useState('');
   const [notes, setNotes] = useState('');
 
-  // UI State: Confirmation modal, conflict message, errors
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [conflictError, setConflictError] = useState<string | null>(null);
   const [successInfo, setSuccessInfo] = useState<{ id: string; message: string } | null>(null);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
-  // Queries
   const { data: deptData, isLoading: isLoadingDepts } = useActiveDepartments();
   const departments = useMemo(() => {
     if (!deptData) return [];
@@ -117,10 +110,8 @@ export function BookAppointmentPage() {
 
   const availableSlots = useMemo(() => slotsData?.data?.slots ?? [], [slotsData]);
 
-  // Mutation
   const createAppointmentMutation = useCreateAppointment();
 
-  // Reset doctor & slot if department changes
   const handleDepartmentChange = (newDeptId: string) => {
     setDepartmentId(newDeptId);
     setDoctorId('');
@@ -128,7 +119,6 @@ export function BookAppointmentPage() {
     setConflictError(null);
   };
 
-  // Reset slot if doctor or date changes
   const handleDoctorChange = (newDoctorId: string) => {
     setDoctorId(newDoctorId);
     setSelectedSlot(null);
@@ -141,7 +131,6 @@ export function BookAppointmentPage() {
     setConflictError(null);
   };
 
-  // Validation before opening confirmation modal
   const handleReviewBooking = () => {
     const errors: Record<string, string> = {};
     if (!selectedPatient) errors['patient'] = 'Please select or register a patient';
@@ -163,7 +152,6 @@ export function BookAppointmentPage() {
     }
   };
 
-  // Final booking submission
   const handleConfirmBooking = async () => {
     if (!selectedPatient || !selectedSlot) return;
 
@@ -206,13 +194,12 @@ export function BookAppointmentPage() {
     }
   };
 
-  // Find department and doctor names for summary
   const selectedDeptObj = departments.find((d) => d.id === departmentId);
   const selectedDocObj = doctors.find((doc) => doc.id === doctorId);
 
   return (
     <div style={{ maxWidth: '960px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      {/* Page Title & Navigation */}
+      {}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
           <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#0a0a0a', margin: 0 }}>
@@ -371,7 +358,7 @@ export function BookAppointmentPage() {
               </span>
             )}
 
-            {/* Quick search results */}
+            {}
             {isSearchingPatients && (
               <div style={{ padding: '0.5rem', color: '#6c757d', fontSize: '0.8125rem' }}>
                 <Spinner size="sm" /> Searching patients…
@@ -556,7 +543,7 @@ export function BookAppointmentPage() {
         </div>
       </Card>
 
-      {/* Step 3: Date & Dynamic Slots */}
+      {}
       <Card>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
           <div>
@@ -627,7 +614,7 @@ export function BookAppointmentPage() {
         )}
       </Card>
 
-      {/* Step 4: Purpose & Notes */}
+      {}
       <Card>
         <h2 style={{ fontSize: '1.0625rem', fontWeight: 600, color: '#0a0a0a', marginBottom: '1rem' }}>
           4. Appointment Purpose & Notes
@@ -734,7 +721,7 @@ export function BookAppointmentPage() {
         />
       )}
 
-      {/* Register Patient Modal Shortcut */}
+      {}
       <RegisterPatientModal
         isOpen={isRegisterModalOpen}
         onClose={() => setIsRegisterModalOpen(false)}
