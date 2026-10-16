@@ -22,6 +22,19 @@ export default defineConfig({
       },
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          'vendor-query': ['@tanstack/react-query'],
+          'vendor-forms': ['react-hook-form', 'zod', '@hookform/resolvers'],
+          'vendor-socket': ['socket.io-client'],
+          'vendor-utils': ['axios', 'date-fns'],
+        },
+      },
+    },
+  },
   test: {
     globals: true,
     environment: 'jsdom',

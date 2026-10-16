@@ -68,7 +68,7 @@ export function SlotPreviewGrid({
       );
     },
 
-    [schedule, selectedDate],
+    [schedule, selectedDate, previewMutation],
   );
 
   useEffect(() => {
