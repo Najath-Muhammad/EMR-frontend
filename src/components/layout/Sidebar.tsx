@@ -35,12 +35,17 @@ const roleNavMap: Record<Role, NavItem[]> = {
 
 const sidebarStyle: React.CSSProperties = {
   width: '240px',
-  minHeight: '100vh',
+  height: '100vh',
+  position: 'sticky',
+  top: 0,
+  left: 0,
   background: '#ffffff',
   borderRight: '1px solid #dee2e6',
   display: 'flex',
   flexDirection: 'column',
   flexShrink: 0,
+  overflowY: 'auto',
+  zIndex: 40,
 };
 
 const brandStyle: React.CSSProperties = {

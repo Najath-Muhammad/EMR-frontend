@@ -48,6 +48,7 @@ export function DepartmentsPage() {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [editingDepartment, setEditingDepartment] = useState<Department | null>(null);
   const [statusConfirmTarget, setStatusConfirmTarget] = useState<Department | null>(null);
+  const [statusErrorModal, setStatusErrorModal] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // Queries & Mutations
@@ -162,7 +163,7 @@ export function DepartmentsPage() {
           const message =
             (err as { response?: { data?: { message?: string } } })?.response?.data?.message ??
             'Failed to change department status';
-          alert(message);
+          setStatusErrorModal(message);
           setStatusConfirmTarget(null);
         },
       },
@@ -508,6 +509,23 @@ export function DepartmentsPage() {
         variant={statusConfirmTarget?.isActive ? 'danger' : 'primary'}
         isLoading={toggleStatusMutation.isPending}
       />
+
+      {/* Action Error Modal */}
+      <Modal
+        isOpen={!!statusErrorModal}
+        onClose={() => setStatusErrorModal(null)}
+        title="Action Failed"
+        maxWidth="440px"
+        footer={
+          <Button variant="secondary" onClick={() => setStatusErrorModal(null)}>
+            Close
+          </Button>
+        }
+      >
+        <div style={{ padding: '0.5rem 0', color: '#dc3545', fontSize: '0.875rem', lineHeight: 1.5 }}>
+          {statusErrorModal}
+        </div>
+      </Modal>
     </div>
   );
 }

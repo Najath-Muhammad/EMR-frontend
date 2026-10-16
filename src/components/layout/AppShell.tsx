@@ -28,12 +28,14 @@ export function AppShell() {
     <div
       style={{
         display: 'flex',
-        minHeight: '100vh',
+        height: '100vh',
+        width: '100vw',
+        overflow: 'hidden',
         background: '#f8f9fa',
       }}
     >
       <Sidebar />
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
         <Header title={title} />
         <main
           role="main"

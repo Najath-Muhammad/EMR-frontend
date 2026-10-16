@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Modal } from '../ui/Modal';
 import { InputField, SelectField, TextareaField } from '../ui/FormField';
+import { DobPicker } from '../ui/DobPicker';
 import { Button } from '../ui/Button';
 import { PossibleDuplicatesModal } from './PossibleDuplicatesModal';
 import { useActiveDepartments } from '../../hooks/useDepartments';
@@ -247,10 +248,9 @@ export function RegisterPatientModal({
             />
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem' }}>
-            <InputField
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem' }}>
+            <DobPicker
               label="Date of Birth"
-              type="date"
               required
               error={errors.dateOfBirth?.message}
               {...register('dateOfBirth')}

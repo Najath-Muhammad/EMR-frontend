@@ -51,6 +51,7 @@ export function ReceptionistsPage() {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [editingReceptionist, setEditingReceptionist] = useState<StaffMember | null>(null);
   const [statusConfirmTarget, setStatusConfirmTarget] = useState<StaffMember | null>(null);
+  const [statusErrorModal, setStatusErrorModal] = useState<string | null>(null);
   const [activationResult, setActivationResult] = useState<StaffCreationResult | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -181,7 +182,7 @@ export function ReceptionistsPage() {
           const message =
             (err as { response?: { data?: { message?: string } } })?.response?.data?.message ??
             'Failed to change receptionist status';
-          alert(message);
+          setStatusErrorModal(message);
           setStatusConfirmTarget(null);
         },
       },
@@ -197,7 +198,7 @@ export function ReceptionistsPage() {
         const message =
           (err as { response?: { data?: { message?: string } } })?.response?.data?.message ??
           'Failed to resend activation invitation';
-        alert(message);
+        setStatusErrorModal(message);
       },
     });
   };
@@ -636,6 +637,23 @@ export function ReceptionistsPage() {
         creationResult={activationResult}
         onClose={() => setActivationResult(null)}
       />
+
+      {/* Action Error Modal */}
+      <Modal
+        isOpen={!!statusErrorModal}
+        onClose={() => setStatusErrorModal(null)}
+        title="Action Failed"
+        maxWidth="440px"
+        footer={
+          <Button variant="secondary" onClick={() => setStatusErrorModal(null)}>
+            Close
+          </Button>
+        }
+      >
+        <div style={{ padding: '0.5rem 0', color: '#dc3545', fontSize: '0.875rem', lineHeight: 1.5 }}>
+          {statusErrorModal}
+        </div>
+      </Modal>
     </div>
   );
 }
